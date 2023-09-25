@@ -1,6 +1,6 @@
 class LexerSpec extends munit.FunSuite {
-  import Model.Token._
-  import Model.Token
+  import Token.Token._
+  import Token.Token
   import Lexer._
 
   val n1 = Num(1)

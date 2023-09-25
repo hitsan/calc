@@ -1,4 +1,4 @@
-object Model {
+object Token {
   enum Token {
     case Add
     case Sub
@@ -9,8 +9,8 @@ object Model {
 }
 
 object Lexer {
-  import Model.Token._
-  import Model.Token
+  import Token.Token._
+  import Token.Token
 
   def determine(s: Char): Option[Token] = s match {
     case '+'              => Some(Add)
