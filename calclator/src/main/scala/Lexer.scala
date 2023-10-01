@@ -1,22 +1,22 @@
-object Model {
+object Token {
   enum Token {
-    case Add
-    case Sub
-    case Mul
-    case Div
+    case Plus
+    case Hyphen
+    case Astarisk
+    case Slash
     case Num(n: Int)
   }
 }
 
 object Lexer {
-  import Model.Token._
-  import Model.Token
+  import Token.Token._
+  import Token.Token
 
   def determine(s: Char): Option[Token] = s match {
-    case '+'              => Some(Add)
-    case '-'              => Some(Sub)
-    case '*'              => Some(Mul)
-    case '/'              => Some(Div)
+    case '+'              => Some(Plus)
+    case '-'              => Some(Hyphen)
+    case '*'              => Some(Astarisk)
+    case '/'              => Some(Slash)
     case n if (s.isDigit) => Some(Num(n.asDigit))
     case ' '              => None
   }
