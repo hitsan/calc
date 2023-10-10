@@ -22,6 +22,8 @@ object Parser {
   def parseTimes = parseCharacter('*')
   def parseDiv = parseCharacter('/')
 
+  //parseEnd
+
   def parseString(str: String): Parser[Node] =
     code =>
       if (code.startsWith(str))
