@@ -13,7 +13,7 @@ object Parser {
   def lexeme(parser: Parser[Expression]): Parser[Expression] =
     code => parser(code.trim)
 
-  def repreat
+  // def repreat
 
   // def chainParser(parsers: Parser[Expression]*): Parser[Expression] = { code =>
   //   {
