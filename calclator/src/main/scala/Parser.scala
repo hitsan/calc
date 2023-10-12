@@ -7,7 +7,7 @@ object Parser {
       expression: T,
       rest: String
   )
-  type Parser[T] = String => Option[PResult[T]]
+  type Parser[T] = PResult[T] => Option[PResult[T]]
 
   // Parser generator
   def lexeme(parser: Parser[Expression]): Parser[Expression] =
