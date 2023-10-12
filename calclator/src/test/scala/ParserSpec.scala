@@ -1,7 +1,7 @@
 class ParserSpec extends munit.FunSuite {
   import Parser._
-  import Ast.Node._
-  import Ast.Node
+  import Ast.Expression._
+  import Ast.Expression
 
   test("Parse Integer") {
     assertEquals(parseInt("1"), Some(PResult(Integer(1), "")))
@@ -48,41 +48,12 @@ class ParserSpec extends munit.FunSuite {
     assertEquals(parser("if(1)"), Some(PResult(Id("if"), "(1)")))
   }
 
-  test("plus calc") {
-    def parsePlusCalc: Parser[Node] =
-      code =>
-        for {
-          PResult(c, rest) <- parseInt(code)
-          PResult(k, res) <- parsePlus(rest)
-          PResult(v, r) <- parseInt(res)
-        } yield PResult(Add(c, v), r)
-
-    assertEquals(
-      parsePlusCalc("1+2"),
-      Some(PResult(Add(Integer(1), Integer(2)), ""))
-    )
-    assertEquals(
-      parsePlusCalc("1+2+1"),
-      Some(PResult(Add(Integer(1), Integer(2)), "+1"))
-    )
-    assertEquals(parsePlusCalc("1+"), None)
+  test("term") {
+    assertEquals(term("1*1"), Some(PResult(Mul(Integer(1),Integer(1)), "")))
   }
 
-  // test("mul expr") {
-  //   assertEquals(parseMulExpr("1*1"), Some(PResult(Mul(Integer(1), Integer(1))), "")))
-  //   // assertEquals(parseMulExpr("1*2*3"), Some(PResult(Mul(Mul(Integer(1), Integer(2))), Integer(3)))
-  // }
   test("nums") {
     assertEquals(parseNums("1 1"), Some(PResult(Integer(1), "")))
   }
-  // test("expr") {
-  //   def pat = parsePattern(parseInt,parsePlus,parseInt,parseTimes,parseInt)
-  //   assertEquals(pat("1+2*3"), Some(PResult(Integer(3), "")))
-  // }
-
-  // test("sss") {
-  //   def p = parseP(parseInt,parsePlus)
-  //   assertEquals(p("1+2"), Some(PResult('+', "2")))
-  // }
 
 }

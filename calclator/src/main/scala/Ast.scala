@@ -1,9 +1,9 @@
 object Ast {
-  enum Node {
-    case Add(lhs: Node, rhs: Node)
-    // case Sub(lhs: Node, rhs: Node)
-    case Mul(lhs: Node, rhs: Node)
-    // case Div(lhs: Node, rhs: Node)
+  enum Expression {
+    case Add(lhs: Expression, rhs: Expression)
+    case Sub(lhs: Expression, rhs: Expression)
+    case Mul(lhs: Expression, rhs: Expression)
+    case Div(lhs: Expression, rhs: Expression)
     case Operator(op: Char)
     case Integer(n: Int)
     case Id(id: String)
