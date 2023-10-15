@@ -1,59 +1,79 @@
 object Parser {
-  import Ast.Expression
-  import Ast.Expression._
+  import Ast.Node
+  import Ast.Node._
 
-  // ParsedResult
   case class PResult[+T](
-      expression: T,
+      token: T,
       rest: String
   )
-  type Parser[T] = PResult[T] => Option[PResult[T]]
+  type Parser[T] = String => Option[PResult[T]]
+  type Token = Node | Char | Int
 
-  // Parser generator
-  def lexeme(parser: Parser[Expression]): Parser[Expression] =
+  // Parser Generator
+  // Skip space
+  def skipSpace(parser: Parser[Node]): Parser[Node] =
     code => parser(code.trim)
 
-  // def repreat
+  def repeat(parser: Parser[Token]): Parser[List[Token]] = code =>
+    for {
+      PResult(token, rest) <- parser(code)
+      repeat(parser)
+    }
 
-  // def chainParser(parsers: Parser[Expression]*): Parser[Expression] = { code =>
-  //   {
-  //     var data: String = code
-  //     val a = parsers.foldLeft(List[Token]()) { (tokens, parser) =>
-  //       val (token, rest) = parser(data) match {
-  //         case Some(token, rest) => (token, rest)
-  //       }
-  //       data = rest
-  //       tokens.appended(token)
-  //     }
-  //     PResult(tokens.head, data)
-  //   }
-  // }
+  def chain(parsers: Parser[Token]*): Parser[List[Token]] = code => {
+    val initial: Option[PResult[List[Token]]] = Some(PResult(Nil, code))
+    parsers.foldLeft(initial) { (acc, parser) =>
+      for {
+        PResult(tokens, rest) <- acc
+        PResult(token, ret) <- parser(rest)
+      } yield PResult(tokens.appended(token), ret)
+    }
+  }
+  extension (code: String)
+    def isHeadChar(c: Char): Boolean =
+      code.headOption match {
+        case Some(value) => value == c
+        case None        => false
+      }
+  extension (code: String)
+    def isDigitHead: Boolean =
+      code.headOption match {
+        case Some(value) => value.isDigit
+        case None        => false
+      }
 
-  def parseCharacter(char: Char): Parser[Expression] =
-    code =>
-      if (code(0) == char) Some(PResult(Operator(char), code.drop(1)))
-      else None
-  def parsePlus = parseCharacter('+')
-  def parseMinus = parseCharacter('-')
-  def parseTimes = parseCharacter('*')
-  def parseDiv = parseCharacter('/')
+  def parseChar(character: Char): Parser[Char] = code =>
+    if (code.head == character) Some(PResult(character, code.tail)) else None
 
-  def parseString(str: String): Parser[Expression] =
-    code =>
-      if (code.startsWith(str))
-        Some(PResult(Id(str), code.drop(str.length)))
-      else None
+  def parseString(str: String): Parser[String] = code =>
+    if (code.startsWith(str)) Some(PResult(str, code.drop(str.length)))
+    else None
+
+  // Parser
+  def parseDigit: Parser[Char] = code =>
+    if (code.isDigitHead) Some(PResult(code.head, code.tail)) else None
+
+  def parseInt: Parser[Node] = code => {
+    val (num, rest) = code.span(_.isDigit)
+    if (num.nonEmpty) Some(PResult(Integer(num.toInt), rest)) else None
+  }
+
+  def parsePlus: Parser[Node => Node => Node] = code =>
+    (code(0), code.tail) match {
+      case ('+', rest) => Some(PResult(Add, rest))
+      case _           => None
+    }
 
   // orElse
-  def choice(parsers: Parser[Expression]*): Parser[Expression] =
+  def choice(parsers: Parser[Node]*): Parser[Node] =
     code => Some(parsers.flatMap(parser => parser(code)).head)
 
-  def parseNum: Parser[Expression] = lexeme(parseInt)
+  def parseNum: Parser[Node] = skipSpace(parseInt)
 
   def parseP(
-      parser1: Parser[Expression],
-      parser2: Parser[Expression]
-  ): Parser[Expression] =
+      parser1: Parser[Node],
+      parser2: Parser[Node]
+  ): Parser[Node] =
     parser1 andThen (r =>
       r.flatMap(n =>
         n match {
@@ -63,12 +83,7 @@ object Parser {
     )
 
   // Parser
-  def parseInt(code: String): Option[PResult[Expression]] = {
-    val (num, rest) = code.span(_.isDigit)
-    if (num.nonEmpty) Some(PResult(Integer(num.toInt), rest)) else None
-  }
-
-  def parseNums(code: String): Option[PResult[Expression]] = {
+  def parseNums(code: String): Option[PResult[Node]] = {
     parseNum(code) match {
       case Some(c, r) =>
         if (r.nonEmpty) parseNum(r) else Some(PResult(c, r))
@@ -76,17 +91,26 @@ object Parser {
     }
   }
 
-  // def term: Parser[Expression] = code => {
+  // def term: Parser[Node] = code => {
   //   factor(code) match {
-  //     case PResult[Expression](e, rest) => (e, rest)
+  //     case PResult[Node](e, rest) => (e, rest)
   //   }
   // }
 
-  def factor: Parser[Expression] = code => unary(code)
+  def factor: Parser[Node] = code => {
+    // val p = for {
+    //   PResult(c, r) <- unary(code)
+    //   _ <- parseDiv(c)
+    // } yield parseDiv(c)
 
-  def unary: Parser[Expression] = code => primary(code)
+    // for {
+    //   pp <- p
+    //   PResult(c, r) <- unary(code)
+    // }
+    ???
+  }
 
-  def primary: Parser[Expression] = code => value(code)
+  def unary: Parser[Node] = code => primary(code)
 
-  def value: Parser[Expression] = code => parseInt(code)
+  def primary: Parser[Node] = code => parseInt(code)
 }
