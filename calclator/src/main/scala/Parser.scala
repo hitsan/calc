@@ -15,10 +15,14 @@ object Parser {
     code => parser(code.trim)
 
   def repeat(parser: Parser[Token]): Parser[List[Token]] = code =>
+    var tokens: List[Token] = Nil
+    val con = parser(code) match {
+      case Some(_) => true
+      case _ => false
+    }
     for {
       PResult(token, rest) <- parser(code)
-      repeat(parser)
-    }
+    } yield 
 
   def chain(parsers: Parser[Token]*): Parser[List[Token]] = code => {
     val initial: Option[PResult[List[Token]]] = Some(PResult(Nil, code))
@@ -30,17 +34,9 @@ object Parser {
     }
   }
   extension (code: String)
-    def isHeadChar(c: Char): Boolean =
-      code.headOption match {
-        case Some(value) => value == c
-        case None        => false
-      }
+    def isHeadChar(c: Char): Boolean = code.headOption.exists(_ == c)
   extension (code: String)
-    def isDigitHead: Boolean =
-      code.headOption match {
-        case Some(value) => value.isDigit
-        case None        => false
-      }
+    def isHeadDigit: Boolean = code.headOption.exists(_.isDigit)
 
   def parseChar(character: Char): Parser[Char] = code =>
     if (code.head == character) Some(PResult(character, code.tail)) else None
@@ -51,7 +47,7 @@ object Parser {
 
   // Parser
   def parseDigit: Parser[Char] = code =>
-    if (code.isDigitHead) Some(PResult(code.head, code.tail)) else None
+    if (code.isHeadDigit) Some(PResult(code.head, code.tail)) else None
 
   def parseInt: Parser[Node] = code => {
     val (num, rest) = code.span(_.isDigit)
