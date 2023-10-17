@@ -26,6 +26,7 @@ class ParserSpec extends munit.FunSuite {
   }
 
   test("Op Plus") {
+    val parsePlus = parseOpe('+')
     assertEquals(parsePlus("+"), Some(PResult(Add, "")))
     assertEquals(parsePlus("++"), Some(PResult(Add, "+")))
     assertEquals(parsePlus("+1"), Some(PResult(Add, "1")))
@@ -34,12 +35,34 @@ class ParserSpec extends munit.FunSuite {
   }
 
   test("chain") {
-    val parser = chain(parseInt, parsePlus, parseInt)
+    val parser = chain(parseInt, parseOpe('+'), parseInt)
     assertEquals(parser("1+2"), Some(PResult(List(1, Add, 2), "")))
     assertEquals(parser("1+2+3"), Some(PResult(List(1, Add, 2), "+3")))
     assertEquals(parser("11+2"), Some(PResult(List(11, Add, 2), "")))
     assertEquals(parser("a+2"), None)
     assertEquals(parser("11-2"), None)
     assertEquals(parser(""), None)
+  }
+
+  test("String test") {
+    val parser = parseString("if")
+    assertEquals(parser("if"), Some(PResult("if", "")))
+    assertEquals(parser("ifelse"), Some(PResult("if", "else")))
+    assertEquals(parser("11+2"), None)
+    assertEquals(parser(""), None)
+  }
+
+  test("primary") {
+    assertEquals(primary("123"), Some(PResult(123, "")))
+    assertEquals(primary("12+3"), Some(PResult(12, "+3")))
+    assertEquals(primary("123"), Some(PResult(123, "")))
+    assertEquals(primary("123abc"), Some(PResult(123, "abc")))
+    assertEquals(primary("abc"), Some(PResult("abc", "")))
+    assertEquals(primary("abc123"), Some(PResult("abc", "123")))
+    assertEquals(primary("+123"), None)
+    assertEquals(primary(""), None)
+  }
+  test("factor") {
+    
   }
 }

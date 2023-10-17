@@ -8,8 +8,8 @@ object Parser {
       rest: String
   )
   type Parser[T] = String => Option[PResult[T]]
-  type Token = Node | Char | Int | Oprater
-  type Oprater = Add.type
+  type Token = Node | Char | Int | Oprater | String
+  type Oprater = Add.type | Sub.type | Mul.type | Div.type
 
   // Parser Generator
   // Skip space
@@ -42,32 +42,37 @@ object Parser {
     }
   }
   extension (code: String)
-    def isHeadChar(c: Char): Boolean = code.headOption.exists(_ == c)
-  extension (code: String)
-    def isHeadDigit: Boolean = code.headOption.exists(_.isDigit)
+    def parseMatchChar(f: Char => Boolean): Option[PResult[Char]] = for {
+      head <- code.headOption if f(head)
+    } yield PResult(head, code.tail)
 
   def parseChar(character: Char): Parser[Char] = code =>
-    if (code.headOption.exists(_ == character))
-      Some(PResult(character, code.tail))
-    else None
+    code.parseMatchChar(_ == character)
 
-  def parseString(str: String): Parser[String] = code =>
-    if (code.startsWith(str)) Some(PResult(str, code.drop(str.length)))
+  def parseString(word: String): Parser[String] = code =>
+    if (code.startsWith(word)) Some(PResult(word, code.drop(word.length)))
     else None
 
   // Parser
-  def parseDigit: Parser[Char] = code =>
-    if (code.isHeadDigit) Some(PResult(code.head, code.tail)) else None
+  def parserAnyChar: Parser[Char] = code => code.parseMatchChar(_.isLetter)
+  def parseDigit: Parser[Char] = code => code.parseMatchChar(_.isDigit)
+  def parseAnyString: Parser[String] = code => 
+    for {
+      PResult(tokens, rest) <- repeat(parserAnyChar)(code)
+    } yield PResult(tokens.mkString, rest)
 
   def parseInt: Parser[Int] = code =>
     for {
       PResult(tokens, rest) <- repeat(parseDigit)(code)
     } yield PResult(tokens.mkString.toInt, rest)
 
-  def parsePlus: Parser[Add.type] = code =>
+  def parseOpe(op: Char): Parser[Oprater] = code => {
+    val opMap = Map(('+', Add), ('-', Sub), ('*', Mul), ('/', Div))
     for {
-      PResult(_, rest) <- parseChar('+')(code)
-    } yield PResult(Add, rest)
+      PResult(op, rest) <- parseChar('+')(code)
+      oprater <- opMap get op
+    } yield PResult(oprater, rest)
+  }
 
   // orElse
   def choice(parsers: Parser[Token]*): Parser[Token] =
@@ -77,5 +82,5 @@ object Parser {
   def term: Parser[Token] = code => ???
   def factor: Parser[Token] = code => ???
   def unary: Parser[Token] = code => primary(code)
-  def primary: Parser[Token] = code => parseInt(code)
+  def primary: Parser[Token] = code => parseInt(code).orElse(parseAnyString(code))
 }
