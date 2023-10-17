@@ -1,28 +1,36 @@
 object Parser {
   import Ast.Node
   import Ast.Node._
+  import Stream._
 
   case class PResult[+T](
       token: T,
       rest: String
   )
   type Parser[T] = String => Option[PResult[T]]
-  type Token = Node | Char | Int
+  type Token = Node | Char | Int | Oprater
+  type Oprater = Add.type
 
   // Parser Generator
   // Skip space
-  def skipSpace(parser: Parser[Node]): Parser[Node] =
+  def skipSpace(parser: Parser[Token]): Parser[Token] =
     code => parser(code.trim)
 
-  def repeat(parser: Parser[Token]): Parser[List[Token]] = code =>
+  def repeat(parser: Parser[Token]): Parser[List[Token]] = code => {
+    var isRep = true
+    var rest = code
     var tokens: List[Token] = Nil
-    val con = parser(code) match {
-      case Some(_) => true
-      case _ => false
+    while (isRep) {
+      parser(rest) match {
+        case Some(PResult(token, ret)) => {
+          rest = ret
+          tokens = tokens.appended(token)
+        }
+        case None => isRep = false
+      }
     }
-    for {
-      PResult(token, rest) <- parser(code)
-    } yield 
+    if (tokens.nonEmpty) Some(PResult(tokens, rest)) else None
+  }
 
   def chain(parsers: Parser[Token]*): Parser[List[Token]] = code => {
     val initial: Option[PResult[List[Token]]] = Some(PResult(Nil, code))
@@ -39,7 +47,9 @@ object Parser {
     def isHeadDigit: Boolean = code.headOption.exists(_.isDigit)
 
   def parseChar(character: Char): Parser[Char] = code =>
-    if (code.head == character) Some(PResult(character, code.tail)) else None
+    if (code.headOption.exists(_ == character))
+      Some(PResult(character, code.tail))
+    else None
 
   def parseString(str: String): Parser[String] = code =>
     if (code.startsWith(str)) Some(PResult(str, code.drop(str.length)))
@@ -49,64 +59,23 @@ object Parser {
   def parseDigit: Parser[Char] = code =>
     if (code.isHeadDigit) Some(PResult(code.head, code.tail)) else None
 
-  def parseInt: Parser[Node] = code => {
-    val (num, rest) = code.span(_.isDigit)
-    if (num.nonEmpty) Some(PResult(Integer(num.toInt), rest)) else None
-  }
+  def parseInt: Parser[Int] = code =>
+    for {
+      PResult(tokens, rest) <- repeat(parseDigit)(code)
+    } yield PResult(tokens.mkString.toInt, rest)
 
-  def parsePlus: Parser[Node => Node => Node] = code =>
-    (code(0), code.tail) match {
-      case ('+', rest) => Some(PResult(Add, rest))
-      case _           => None
-    }
+  def parsePlus: Parser[Add.type] = code =>
+    for {
+      PResult(_, rest) <- parseChar('+')(code)
+    } yield PResult(Add, rest)
 
   // orElse
-  def choice(parsers: Parser[Node]*): Parser[Node] =
+  def choice(parsers: Parser[Token]*): Parser[Token] =
     code => Some(parsers.flatMap(parser => parser(code)).head)
 
-  def parseNum: Parser[Node] = skipSpace(parseInt)
-
-  def parseP(
-      parser1: Parser[Node],
-      parser2: Parser[Node]
-  ): Parser[Node] =
-    parser1 andThen (r =>
-      r.flatMap(n =>
-        n match {
-          case PResult(n, r) => parser2(r)
-        }
-      )
-    )
-
   // Parser
-  def parseNums(code: String): Option[PResult[Node]] = {
-    parseNum(code) match {
-      case Some(c, r) =>
-        if (r.nonEmpty) parseNum(r) else Some(PResult(c, r))
-      case _ => None
-    }
-  }
-
-  // def term: Parser[Node] = code => {
-  //   factor(code) match {
-  //     case PResult[Node](e, rest) => (e, rest)
-  //   }
-  // }
-
-  def factor: Parser[Node] = code => {
-    // val p = for {
-    //   PResult(c, r) <- unary(code)
-    //   _ <- parseDiv(c)
-    // } yield parseDiv(c)
-
-    // for {
-    //   pp <- p
-    //   PResult(c, r) <- unary(code)
-    // }
-    ???
-  }
-
-  def unary: Parser[Node] = code => primary(code)
-
-  def primary: Parser[Node] = code => parseInt(code)
+  def term: Parser[Token] = code => ???
+  def factor: Parser[Token] = code => ???
+  def unary: Parser[Token] = code => primary(code)
+  def primary: Parser[Token] = code => parseInt(code)
 }
