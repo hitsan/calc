@@ -1,8 +1,7 @@
-object Parser {
-  import Ast.Node
-  import Ast.Node._
-  import Stream._
+import Ast.Node
+import Ast.Node._
 
+object Parser {
   case class PResult[+T](
       token: T,
       rest: String
@@ -13,13 +12,13 @@ object Parser {
 
   // Parser Generator
   // Skip space
-  def skipSpace(parser: Parser[Token]): Parser[Token] =
+  def skipSpace[T](parser: Parser[T]): Parser[T] =
     code => parser(code.trim)
 
-  def repeat(parser: Parser[Token]): Parser[List[Token]] = code => {
+  def repeat[T](parser: Parser[T]): Parser[List[T]] = code => {
     var isRep = true
     var rest = code
-    var tokens: List[Token] = Nil
+    var tokens: List[T] = Nil
     while (isRep) {
       parser(rest) match {
         case Some(PResult(token, ret)) => {
@@ -32,8 +31,8 @@ object Parser {
     if (tokens.nonEmpty) Some(PResult(tokens, rest)) else None
   }
 
-  def chain(parsers: Parser[Token]*): Parser[List[Token]] = code => {
-    val initial: Option[PResult[List[Token]]] = Some(PResult(Nil, code))
+  def chain[T](parsers: Parser[T]*): Parser[List[T]] = code => {
+    val initial: Option[PResult[List[T]]] = Some(PResult(Nil, code))
     parsers.foldLeft(initial) { (acc, parser) =>
       for {
         PResult(tokens, rest) <- acc
@@ -41,6 +40,10 @@ object Parser {
       } yield PResult(tokens.appended(token), ret)
     }
   }
+
+  def choice[T](parsers: Parser[T]*): Parser[T] =
+    code => Some(parsers.flatMap(parser => parser(code)).head)
+
   extension (code: String)
     def parseMatchChar(f: Char => Boolean): Option[PResult[Char]] = for {
       head <- code.headOption if f(head)
@@ -49,14 +52,14 @@ object Parser {
   def parseChar(character: Char): Parser[Char] = code =>
     code.parseMatchChar(_ == character)
 
-  def parseString(word: String): Parser[String] = code =>
+  def parseString(word: String): Parser[Token] = code =>
     if (code.startsWith(word)) Some(PResult(word, code.drop(word.length)))
     else None
 
   // Parser
   def parserAnyChar: Parser[Char] = code => code.parseMatchChar(_.isLetter)
   def parseDigit: Parser[Char] = code => code.parseMatchChar(_.isDigit)
-  def parseAnyString: Parser[String] = code => 
+  def parseAnyString: Parser[String] = code =>
     for {
       PResult(tokens, rest) <- repeat(parserAnyChar)(code)
     } yield PResult(tokens.mkString, rest)
@@ -74,13 +77,10 @@ object Parser {
     } yield PResult(oprater, rest)
   }
 
-  // orElse
-  def choice(parsers: Parser[Token]*): Parser[Token] =
-    code => Some(parsers.flatMap(parser => parser(code)).head)
-
   // Parser
   def term: Parser[Token] = code => ???
   def factor: Parser[Token] = code => ???
   def unary: Parser[Token] = code => primary(code)
-  def primary: Parser[Token] = code => parseInt(code).orElse(parseAnyString(code))
+  def primary: Parser[Token] = code =>
+    parseInt(code).orElse(parseAnyString(code))
 }

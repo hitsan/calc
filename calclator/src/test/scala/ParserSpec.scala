@@ -62,7 +62,7 @@ class ParserSpec extends munit.FunSuite {
     assertEquals(primary("+123"), None)
     assertEquals(primary(""), None)
   }
-  test("factor") {
-    
-  }
+  // test("factor") {
+
+  // }
 }
