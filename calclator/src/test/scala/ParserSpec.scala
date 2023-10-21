@@ -20,7 +20,6 @@ class ParserSpec extends munit.FunSuite {
   test("number") {
     assertEquals(parseInt("123"), Some(PResult(123, "")))
     assertEquals(parseInt("12+3"), Some(PResult(12, "+3")))
-    assertEquals(parseInt("123"), Some(PResult(123, "")))
     assertEquals(parseInt("+123"), None)
     assertEquals(parseInt(""), None)
   }

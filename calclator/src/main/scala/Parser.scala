@@ -15,21 +15,26 @@ object Parser {
   def skipSpace[T](parser: Parser[T]): Parser[T] =
     code => parser(code.trim)
 
-  def repeat[T](parser: Parser[T]): Parser[List[T]] = code => {
-    var isRep = true
-    var rest = code
-    var tokens: List[T] = Nil
-    while (isRep) {
-      parser(rest) match {
-        case Some(PResult(token, ret)) => {
-          rest = ret
-          tokens = tokens.appended(token)
-        }
-        case None => isRep = false
-      }
-    }
-    if (tokens.nonEmpty) Some(PResult(tokens, rest)) else None
-  }
+  def repeat[T](parser: Parser[T]): Parser[List[T]] = code => (
+    for {
+      PResult(token, rest) <- parser(code).orElse(Some(PResult(Nil, code)))
+      PResult(tokens, res) <- repeat(parser)(rest)
+    } yield PResult(token::tokens, res)
+  )
+  //   var isRep = true
+  //   var rest = code
+  //   var tokens: List[T] = Nil
+  //   while (isRep) {
+  //     parser(rest) match {
+  //       case Some(PResult(token, ret)) => {
+  //         rest = ret
+  //         tokens = tokens.appended(token)
+  //       }
+  //       case None => isRep = false
+  //     }
+  //   }
+  //   if (tokens.nonEmpty) Some(PResult(tokens, rest)) else None
+  // }
 
   def chain[T](parsers: Parser[T]*): Parser[List[T]] = code => {
     val initial: Option[PResult[List[T]]] = Some(PResult(Nil, code))
