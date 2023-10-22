@@ -1,17 +1,6 @@
-import Ast.Node
-import Ast.Node._
+package parser
 
-object Parser {
-  case class PResult[+T](
-      token: T,
-      rest: String
-  )
-  type Parser[T] = String => Option[PResult[T]]
-  type Token = Node | Char | Int | Oprater | String
-  type Oprater = Add.type | Sub.type | Mul.type | Div.type
-
-  // Parser Generator
-  // Skip space
+object ParserGenerater {
   def skipSpace[T](parser: Parser[T]): Parser[T] =
     code => parser(code.trim)
 
@@ -61,36 +50,4 @@ object Parser {
   def parseString(word: String): Parser[Token] = code =>
     if (code.startsWith(word)) Some(PResult(word, code.drop(word.length)))
     else None
-
-  // Parser
-  def parserAnyChar: Parser[Char] = code => code.parseMatchChar(_.isLetter)
-  def parseDigit: Parser[Char] = code => code.parseMatchChar(_.isDigit)
-  def parseAnyString: Parser[String] = code =>
-    for {
-      PResult(tokens, rest) <- repeat(parserAnyChar)(code)
-    } yield PResult(tokens.mkString, rest)
-
-  def parseInt: Parser[Node] = code =>
-    for {
-      PResult(tokens, rest) <- repeat(parseDigit)(code)
-    } yield {
-      val number = tokens.mkString.toInt
-      PResult(Integer(number), rest)
-    }
-
-  def parseOpe(op: Char): Parser[Oprater] = code => {
-    val opMap = Map(('+', Add), ('-', Sub), ('*', Mul), ('/', Div))
-    for {
-      PResult(op, rest) <- parseChar('+')(code)
-      oprater <- opMap get op
-    } yield PResult(oprater, rest)
-  }
-
-  // Parser
-  def term: Parser[Token] = code => ???
-  def factor: Parser[Token] = code => ???
-
-  def unary: Parser[Token] = code => primary(code)
-  def primary: Parser[Token] = code =>
-    parseInt(code).orElse(parseAnyString(code))
 }

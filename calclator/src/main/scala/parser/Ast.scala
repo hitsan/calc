@@ -1,3 +1,5 @@
+package parser
+
 object Ast {
   enum Node {
     case Add(lhs: Node)(rhs: Node)
