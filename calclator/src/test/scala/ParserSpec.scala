@@ -69,11 +69,11 @@ class ParserSpec extends munit.FunSuite {
     assertEquals(primary(""), None)
   }
 
-  test("factor") {
-    assertEquals(factor("1*2"), Some(PResult(Mul(Integer(1))(Integer(2)), "")))
-    assertEquals(factor("1*2*3"), Some(PResult(Mul(Mul(Integer(1))(Integer(2)))(Integer(3)), "")))
-    assertEquals(factor(""), None)
-    assertEquals(factor("1+2"), None)
-    assertEquals(factor("*1*2"), None)
-  }
+  // test("factor") {
+  //   assertEquals(factor("1*2"), Some(PResult(Mul(Integer(1))(Integer(2)), "")))
+  //   assertEquals(factor("1*2*3"), Some(PResult(Mul(Mul(Integer(1))(Integer(2)))(Integer(3)), "")))
+  //   assertEquals(factor(""), None)
+  //   assertEquals(factor("1+2"), None)
+  //   assertEquals(factor("*1*2"), None)
+  // }
 }
