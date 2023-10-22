@@ -88,19 +88,7 @@ object Parser {
 
   // Parser
   def term: Parser[Token] = code => ???
-  def factor: Parser[Token] = code => {
-    val value = for {
-      PResult(tokens, rest) <- chain(
-        unary,
-        repeatZeroOrMore(chain(parseOpe('*'), unary))
-      )(code)
-    } yield PResult(tokens, rest)
-    for {
-      PResult(tokens, rest) <- value
-    } yield tokens.reduce((acc, token) =>
-      case Mul => token(acc)
-    )
-  }
+  def factor: Parser[Token] = code => ???
 
   def unary: Parser[Token] = code => primary(code)
   def primary: Parser[Token] = code =>
