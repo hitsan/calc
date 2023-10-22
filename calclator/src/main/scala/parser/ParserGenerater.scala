@@ -5,12 +5,12 @@ object ParserGenerater {
     code => parser(code.trim)
 
   def repeat[T](parser: Parser[T]): Parser[List[T]] = code =>
-    repeatZeroOrMore(parser)(code) match {
+    repeat(true)(parser)(code) match {
       case Some(Nil, _) => None
       case value        => value
     }
 
-  def repeatZeroOrMore[T](parser: Parser[T]): Parser[List[T]] = code => {
+  def repeat[T](allowZero: true)(parser: Parser[T]): Parser[List[T]] = code => {
     var isRep = true
     var rest = code
     var tokens: List[T] = Nil

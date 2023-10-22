@@ -13,7 +13,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
   }
 
   test("repeat Zero or More") {
-    val number = repeatZeroOrMore(parseDigit)
+    val number = repeat(true)(parseDigit)
     assertEquals(number("123"), Some(PResult(List('1','2','3'), "")))
     assertEquals(number("123+12"), Some(PResult(List('1','2','3'), "+12")))
     assertEquals(number(""), Some(PResult(Nil, "")))
