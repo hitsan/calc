@@ -13,12 +13,12 @@ object Parser {
       PResult(tokens, rest) <- repeat(parserAnyChar)(code)
     } yield PResult(tokens.mkString, rest)
 
-  def parseInt: Parser[Node] = code =>
+  def parseInt: Parser[Int] = code =>
     for {
       PResult(tokens, rest) <- repeat(parseDigit)(code)
     } yield {
       val number = tokens.mkString.toInt
-      PResult(Integer(number), rest)
+      PResult(number, rest)
     }
 
   def parseOpe(op: Char): Parser[Oprater] = code => {
