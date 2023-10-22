@@ -15,26 +15,27 @@ object Parser {
   def skipSpace[T](parser: Parser[T]): Parser[T] =
     code => parser(code.trim)
 
-  def repeat[T](parser: Parser[T]): Parser[List[T]] = code => (
-    for {
-      PResult(token, rest) <- parser(code).orElse(Some(PResult(Nil, code)))
-      PResult(tokens, res) <- repeat(parser)(rest)
-    } yield PResult(token::tokens, res)
-  )
-  //   var isRep = true
-  //   var rest = code
-  //   var tokens: List[T] = Nil
-  //   while (isRep) {
-  //     parser(rest) match {
-  //       case Some(PResult(token, ret)) => {
-  //         rest = ret
-  //         tokens = tokens.appended(token)
-  //       }
-  //       case None => isRep = false
-  //     }
-  //   }
-  //   if (tokens.nonEmpty) Some(PResult(tokens, rest)) else None
-  // }
+  def repeat[T](parser: Parser[T]): Parser[List[T]] = code =>
+    repeatZeroOrMore(parser)(code) match {
+      case Some(Nil, _) => None
+      case value        => value
+    }
+
+  def repeatZeroOrMore[T](parser: Parser[T]): Parser[List[T]] = code => {
+    var isRep = true
+    var rest = code
+    var tokens: List[T] = Nil
+    while (isRep) {
+      parser(rest) match {
+        case Some(PResult(token, ret)) => {
+          rest = ret
+          tokens = tokens.appended(token)
+        }
+        case None => isRep = false
+      }
+    }
+    Some(PResult(tokens, rest))
+  }
 
   def chain[T](parsers: Parser[T]*): Parser[List[T]] = code => {
     val initial: Option[PResult[List[T]]] = Some(PResult(Nil, code))
@@ -69,10 +70,13 @@ object Parser {
       PResult(tokens, rest) <- repeat(parserAnyChar)(code)
     } yield PResult(tokens.mkString, rest)
 
-  def parseInt: Parser[Int] = code =>
+  def parseInt: Parser[Node] = code =>
     for {
       PResult(tokens, rest) <- repeat(parseDigit)(code)
-    } yield PResult(tokens.mkString.toInt, rest)
+    } yield {
+      val number = tokens.mkString.toInt
+      PResult(Integer(number), rest)
+    }
 
   def parseOpe(op: Char): Parser[Oprater] = code => {
     val opMap = Map(('+', Add), ('-', Sub), ('*', Mul), ('/', Div))
@@ -84,7 +88,20 @@ object Parser {
 
   // Parser
   def term: Parser[Token] = code => ???
-  def factor: Parser[Token] = code => ???
+  def factor: Parser[Token] = code => {
+    val value = for {
+      PResult(tokens, rest) <- chain(
+        unary,
+        repeatZeroOrMore(chain(parseOpe('*'), unary))
+      )(code)
+    } yield PResult(tokens, rest)
+    for {
+      PResult(tokens, rest) <- value
+    } yield tokens.reduce((acc, token) =>
+      case Mul => token(acc)
+    )
+  }
+
   def unary: Parser[Token] = code => primary(code)
   def primary: Parser[Token] = code =>
     parseInt(code).orElse(parseAnyString(code))
