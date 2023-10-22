@@ -6,7 +6,7 @@ object Ast {
     case Sub(lhs: Node)(rhs: Node)
     case Mul(lhs: Node)(rhs: Node)
     case Div(lhs: Node)(rhs: Node)
-    // case Integer(n: Int)
+    case Integer(n: Int)
     case Id(id: String)
   }
 }

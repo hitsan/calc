@@ -1,4 +1,5 @@
 class ParserGeneraterSpec extends munit.FunSuite {
+  import parser._
   import parser.Parser._
   import parser.ParserGenerater._
   import parser.PResult
@@ -20,6 +21,16 @@ class ParserGeneraterSpec extends munit.FunSuite {
   }
 
   test("chain") {
+    val parser = chain(parseInt, parseOpe('+'), parseInt)
+    assertEquals(parser("1+2"), Some(PResult(List(1, Add, 2), "")))
+    assertEquals(parser("1+2+3"), Some(PResult(List(1, Add, 2), "+3")))
+    assertEquals(parser("11+2"), Some(PResult(List(11, Add, 2), "")))
+    assertEquals(parser("a+2"), None)
+    assertEquals(parser("11-2"), None)
+    assertEquals(parser(""), None)
+  }
+
+  test("chain with function") {
     val parser = chain(parseInt, parseOpe('+'), parseInt)
     assertEquals(parser("1+2"), Some(PResult(List(1, Add, 2), "")))
     assertEquals(parser("1+2+3"), Some(PResult(List(1, Add, 2), "+3")))
