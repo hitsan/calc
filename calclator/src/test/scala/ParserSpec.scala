@@ -7,19 +7,19 @@ class ParserSpec extends munit.FunSuite {
 
   // Initial
   test("isDigit") {
-    assertEquals(parseDigit("1+1"), Some(PResult('1', "+1")))
+    assertEquals(parseDigit("1+1"), Some(PResult(IntNum(1), "+1")))
     assertEquals(parseDigit(""), None)
     assertEquals(parseDigit("a"), None)
   }
 
   test("number") {
-    assertEquals(parseInt("12+3"), Some(PResult(12, "+3")))
+    assertEquals(parseInt("12+3"), Some(PResult(IntNum(12), "+3")))
     assertEquals(parseInt("+123"), None)
     assertEquals(parseInt(""), None)
   }
 
   test("Op Plus") {
-    val parsePlus = parseOpe('+')
+    val parsePlus = parseOp('+')
     assertEquals(parsePlus("+"), Some(PResult(Add, "")))
     assertEquals(parsePlus("++"), Some(PResult(Add, "+")))
     assertEquals(parsePlus("+1"), Some(PResult(Add, "1")))
@@ -28,12 +28,12 @@ class ParserSpec extends munit.FunSuite {
   }
 
   test("primary") {
-    assertEquals(primary("123"), Some(PResult(123, "")))
-    assertEquals(primary("12+3"), Some(PResult(12, "+3")))
-    assertEquals(primary("123"), Some(PResult(123, "")))
-    assertEquals(primary("123abc"), Some(PResult(123, "abc")))
-    assertEquals(primary("abc"), Some(PResult("abc", "")))
-    assertEquals(primary("abc123"), Some(PResult("abc", "123")))
+    assertEquals(primary("123"), Some(PResult(IntNum(123), "")))
+    assertEquals(primary("12+3"), Some(PResult(IntNum(12), "+3")))
+    assertEquals(primary("123"), Some(PResult(IntNum(123), "")))
+    assertEquals(primary("123abc"), Some(PResult(IntNum(123), "abc")))
+    assertEquals(primary("abc"), Some(PResult(Str("abc"), "")))
+    assertEquals(primary("abc123"), Some(PResult(Str("abc"), "123")))
     assertEquals(primary("+123"), None)
     assertEquals(primary(""), None)
   }

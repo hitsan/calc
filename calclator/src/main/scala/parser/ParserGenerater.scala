@@ -44,7 +44,7 @@ object ParserGenerater {
     ???
   }
 
-  def chain[T](parsers: Parser[T]*)(f: Token => Token): Parser[T] = code => {
+  def chain[T](parsers: Parser[T]*)(f: Node => Node): Parser[T] = code => {
     val initial: Option[PResult[List[T]]] = Some(PResult(Nil, code))
     parsers.foldLeft(initial) { (acc, parser) =>
       for {
@@ -58,15 +58,12 @@ object ParserGenerater {
   def choice[T](parsers: Parser[T]*): Parser[T] =
     code => Some(parsers.flatMap(parser => parser(code)).head)
 
-  extension (code: String)
-    def parseMatchChar(f: Char => Boolean): Option[PResult[Char]] = for {
-      head <- code.headOption if f(head)
-    } yield PResult(head, code.tail)
+  def parseChar(character: Char): Parser[Node] = code => for {
+      head <- code.headOption if (head== character)
+      str = head.toString
+    } yield PResult(Str(str), code.tail)
 
-  def parseChar(character: Char): Parser[Char] = code =>
-    code.parseMatchChar(_ == character)
-
-  def parseString(word: String): Parser[Token] = code =>
-    if (code.startsWith(word)) Some(PResult(word, code.drop(word.length)))
+  def parseString(word: String): Parser[Node] = code =>
+    if (code.startsWith(word)) Some(PResult(Str(word), code.drop(word.length)))
     else None
 }
