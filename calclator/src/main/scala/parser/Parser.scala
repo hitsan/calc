@@ -55,7 +55,8 @@ object Parser {
 
   // Parser Expression
   def term: Parser[Node] = code => ???
-  def factor: Parser[Node] = code => ???
+  def factor: Parser[Node] = code =>
+    chain(unary, repeat(true)(chain(parseOp('*'), unary)))
 
   def unary: Parser[Node] = code => primary(code)
   def primary: Parser[Node] = code =>

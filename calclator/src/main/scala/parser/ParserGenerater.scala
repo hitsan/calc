@@ -37,23 +37,16 @@ object ParserGenerater {
       } yield PResult(tokens.appended(token), ret)
     }
   }
-
-  def applyExpr(ast: Node, token: Node): Node = {
-    // case Mul      => Mul(ast)
-    // case tok: Int => ast(tok)
+  def chain[T](parsers: Parser[T]*)(f: Node => Node): Parser[T] = code => {
+    val initial: Option[PResult[List[T]]] = Some(PResult(Nil, code))
+    parsers.foldLeft(initial) { (acc, parser) =>
+      for {
+        PResult(tokens, rest) <- acc
+        PResult(token, ret) <- parser(rest)
+      } yield PResult(tokens.appended(token), ret)
+    }
     ???
   }
-
-  // def chain[T](parsers: Parser[T]*)(f: Node => Node): Parser[T] = code => {
-  //   val initial: Option[PResult[List[T]]] = Some(PResult(Nil, code))
-  //   parsers.foldLeft(initial) { (acc, parser) =>
-  //     for {
-  //       PResult(tokens, rest) <- acc
-  //       PResult(token, ret) <- parser(rest)
-  //     } yield PResult(tokens.appended(token), ret)
-  //   }
-  //   ???
-  // }
 
   def choice[T](parsers: Parser[T]*): Parser[T] =
     code => Some(parsers.flatMap(parser => parser(code)).head)
