@@ -45,9 +45,10 @@ object Parser {
 
   def parseOp(op: Char): Parser[Oprater] = code => {
     val opMap =
-      Map((Str("+"), Add), (Str("-"), Sub), (Str("*"), Mul), (("/"), Div))
+      Map((Str("+"), Add), (Str("-"), Sub), (Str("*"), Mul), (Str("/"), Div))
+    val parser = parseChar(op)
     for {
-      PResult(op, rest) <- parseChar('+')(code)
+      PResult(op, rest) <- parser(code)
       oprater <- opMap get op
     } yield PResult(oprater, rest)
   }
