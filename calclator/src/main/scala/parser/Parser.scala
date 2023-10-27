@@ -43,7 +43,7 @@ object Parser {
       PResult(number, rest)
     }
 
-  def parseOp(op: Char): Parser[Oprater] = code => {
+  def parseOp(op: Char): Parser[Operater] = code => {
     val opMap =
       Map((Str("+"), Add), (Str("-"), Sub), (Str("*"), Mul), (Str("/"), Div))
     val parser = parseChar(op)
@@ -55,8 +55,8 @@ object Parser {
 
   // Parser Expression
   def term: Parser[Node] = code => ???
-  def factor: Parser[Node] = code =>
-    chain(unary, repeat(true)(chain(parseOp('*'), unary)))
+  // def factor: Parser[Node] = code =>
+  //   chain(unary, repeat(true)(chain(parseOp('*'), unary)))
 
   def unary: Parser[Node] = code => primary(code)
   def primary: Parser[Node] = code =>

@@ -37,22 +37,23 @@ object ParserGenerater {
       } yield PResult(tokens.appended(token), ret)
     }
   }
-  def chain[T](parsers: Parser[T]*)(f: Node => Node): Parser[T] = code => {
-    val initial: Option[PResult[List[T]]] = Some(PResult(Nil, code))
-    parsers.foldLeft(initial) { (acc, parser) =>
-      for {
-        PResult(tokens, rest) <- acc
-        PResult(token, ret) <- parser(rest)
-      } yield PResult(tokens.appended(token), ret)
-    }
-    ???
-  }
+
+  def combExpr(ope: Operater)(rhs: Node)(lhs: Node) = Add(rhs)(lhs)
+
+  def comb[T >: Node, K >: Operater](prev: Parser[K], next: Parser[T=>K])(
+      f: K => T => T
+  ): Parser[K] = code =>
+    for {
+      PResult(preToken, preRest) <- prev(code)
+      PResult(nextToken, nextRest) <- next(preRest)
+    } yield PResult(f(preToken)(nextToken), nextRest)
 
   def choice[T](parsers: Parser[T]*): Parser[T] =
     code => Some(parsers.flatMap(parser => parser(code)).head)
 
-  def parseChar(character: Char): Parser[Node] = code => for {
-      head <- code.headOption if (head== character)
+  def parseChar(character: Char): Parser[Node] = code =>
+    for {
+      head <- code.headOption if (head == character)
       str = head.toString
     } yield PResult(Str(str), code.tail)
 

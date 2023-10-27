@@ -20,21 +20,20 @@ class ParserGeneraterSpec extends munit.FunSuite {
     assertEquals(number(""), Some(PResult(Nil, "")))
   }
 
-  test("chain") {
-    val parser = chain(parseInt, parseOp('+'), parseInt)
-    assertEquals(parser("1+2"), Some(PResult(List(IntNum(1), Add, IntNum(2)), "")))
-    assertEquals(parser("1+2+3"), Some(PResult(List(IntNum(1), Add, IntNum(2)), "+3")))
-    assertEquals(parser("11+2"), Some(PResult(List(IntNum(11), Add, IntNum(2)), "")))
-    assertEquals(parser("a+2"), None)
-    assertEquals(parser("11-2"), None)
-    assertEquals(parser(""), None)
-  }
+  // test("chain") {
+  //   val parser = chain(parseInt, parseOp('+'), parseInt)
+  //   assertEquals(parser("1+2"), Some(PResult(List(IntNum(1), Add, IntNum(2)), "")))
+  //   assertEquals(parser("1+2+3"), Some(PResult(List(IntNum(1), Add, IntNum(2)), "+3")))
+  //   assertEquals(parser("11+2"), Some(PResult(List(IntNum(11), Add, IntNum(2)), "")))
+  //   assertEquals(parser("a+2"), None)
+  //   assertEquals(parser("11-2"), None)
+  //   assertEquals(parser(""), None)
+  // }
 
-  test("chain with function") {
-    val parser = chain(parseInt, parseOp('+'), parseInt)
-    assertEquals(parser("1+2"), Some(PResult(List(IntNum(1), Add, IntNum(2)), "")))
-    assertEquals(parser("1+2+3"), Some(PResult(List(IntNum(1), Add, IntNum(2)), "+3")))
-    assertEquals(parser("11+2"), Some(PResult(List(IntNum(11), Add, IntNum(2)), "")))
+  test("comb with function") {
+    val parser = comb(parseOp('+'), parseInt)(combExpr)
+    assertEquals(parser("+2"), Some(PResult(Add(IntNum(2)), "")))
+    assertEquals(parser("+2+3"), Some(PResult(Add(IntNum(2)), "+3")))
     assertEquals(parser("a+2"), None)
     assertEquals(parser("11-2"), None)
     assertEquals(parser(""), None)
