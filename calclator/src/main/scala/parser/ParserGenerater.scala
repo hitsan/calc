@@ -46,6 +46,12 @@ object ParserGenerater {
       PResult(nextToken, nextRest) <- next(preRest)
     } yield PResult(combExpr(preToken)(nextToken), nextRest)
 
+  def comb2(prev: Parser[Node], next: Parser[Node=>Node]): Parser[Node] = code =>
+    for {
+      PResult(preToken, preRest) <- prev(code)
+      PResult(nextToken, nextRest) <- next(preRest)
+    } yield PResult(nextToken(preToken), nextRest)
+
   def choice[T](parsers: Parser[T]*): Parser[T] =
     code => Some(parsers.flatMap(parser => parser(code)).head)
 

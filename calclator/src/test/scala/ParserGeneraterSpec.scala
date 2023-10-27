@@ -32,11 +32,13 @@ class ParserGeneraterSpec extends munit.FunSuite {
 
   test("comb with function") {
     val parser = comb(parseOp('+'), parseInt)
-    assertEquals(parser("+2"), Some(PResult(Add(IntNum(2)), "")))
-    assertEquals(parser("+2+3"), Some(PResult(Add(IntNum(2)), "+3")))
     assertEquals(parser("a+2"), None)
     assertEquals(parser("11-2"), None)
     assertEquals(parser(""), None)
+
+    val parser1 = comb2(parseInt, comb(parseOp('+'), parseInt))
+    assertEquals(parser1("1+2"), Some(PResult(Add(IntNum(2))(IntNum(1)), "")))
+    assertEquals(parser1("1+2+3"), Some(PResult(Add(IntNum(2))(IntNum(1)), "+3")))
   }
 
   test("String test") {
