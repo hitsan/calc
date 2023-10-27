@@ -38,15 +38,13 @@ object ParserGenerater {
     }
   }
 
-  def combExpr(ope: Operater)(rhs: Node)(lhs: Node) = Add(rhs)(lhs)
+  def combExpr(ope: Operater)(rhs: Node): Node=>Node = ope(rhs)
 
-  def comb[T >: Node, K >: Operater](prev: Parser[K], next: Parser[T=>K])(
-      f: K => T => T
-  ): Parser[K] = code =>
+  def comb(prev: Parser[Operater], next: Parser[Node]): Parser[Node=>Node] = code =>
     for {
       PResult(preToken, preRest) <- prev(code)
       PResult(nextToken, nextRest) <- next(preRest)
-    } yield PResult(f(preToken)(nextToken), nextRest)
+    } yield PResult(combExpr(preToken)(nextToken), nextRest)
 
   def choice[T](parsers: Parser[T]*): Parser[T] =
     code => Some(parsers.flatMap(parser => parser(code)).head)

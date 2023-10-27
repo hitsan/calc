@@ -43,9 +43,14 @@ object Parser {
       PResult(number, rest)
     }
 
-  def parseOp(op: Char): Parser[Operater] = code => {
+  def binExpr(op: Node=>Node=>Node) = op
+  val add = binExpr(Add)
+  val sub = binExpr(Sub)
+  val mul = binExpr(Mul)
+  val div = binExpr(Div)
+  def parseOp(op: Char): Parser[Node=>Node=>Node] = code => {
     val opMap =
-      Map((Str("+"), Add), (Str("-"), Sub), (Str("*"), Mul), (Str("/"), Div))
+      Map((Str("+"), add), (Str("-"), sub), (Str("*"), mul), (Str("/"), div))
     val parser = parseChar(op)
     for {
       PResult(op, rest) <- parser(code)
