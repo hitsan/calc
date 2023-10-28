@@ -38,19 +38,43 @@ object ParserGenerater {
     }
   }
 
-  def combExpr(ope: Operater)(rhs: Node): Node=>Node = ope(rhs)
+  def combineTokens(tokens: List[AA]): Node = 
+    val toks = tokens.tail.reverse
+    toks.foldRight(tokens.head)( (acc, token) =>
+      acc match {
+        case a: Node=>Node => a(token)
+        case a: Node => token(a)
+      }
+    )
 
-  def comb(prev: Parser[Operater], next: Parser[Node]): Parser[Node=>Node] = code =>
-    for {
-      PResult(preToken, preRest) <- prev(code)
-      PResult(nextToken, nextRest) <- next(preRest)
-    } yield PResult(combExpr(preToken)(nextToken), nextRest)
+  def chain2(parsers: Parser[AA]*): Parser[Node] = code => {
+    var rest = code
+    val initial: Option[List[AA]] = Some(List[AA]())
+    val tokens = parsers.foldLeft(initial)((acc, parser) =>
+      for {
+        PResult(token, ret) <- parser(rest)
+        a <- acc
+        rest = ret
+      } yield a :+ token
+    )
+    tokens.exists(Some(PResult(combineTokens(tokens.get), rest)))
+  }
 
-  def comb2(prev: Parser[Node], next: Parser[Node=>Node]): Parser[Node] = code =>
-    for {
-      PResult(preToken, preRest) <- prev(code)
-      PResult(nextToken, nextRest) <- next(preRest)
-    } yield PResult(nextToken(preToken), nextRest)
+  def combExpr(ope: Operater)(rhs: Node): Node => Node = ope(rhs)
+
+  def comb(prev: Parser[Operater], next: Parser[Node]): Parser[Node => Node] =
+    code =>
+      for {
+        PResult(preToken, preRest) <- prev(code)
+        PResult(nextToken, nextRest) <- next(preRest)
+      } yield PResult(combExpr(preToken)(nextToken), nextRest)
+
+  def comb2(prev: Parser[Node], next: Parser[Node => Node]): Parser[Node] =
+    code =>
+      for {
+        PResult(preToken, preRest) <- prev(code)
+        PResult(nextToken, nextRest) <- next(preRest)
+      } yield PResult(nextToken(preToken), nextRest)
 
   def choice[T](parsers: Parser[T]*): Parser[T] =
     code => Some(parsers.flatMap(parser => parser(code)).head)
