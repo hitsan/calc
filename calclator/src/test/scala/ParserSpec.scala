@@ -19,13 +19,11 @@ class ParserSpec extends munit.FunSuite {
 
   test("Operater") {
     val parsePlus = operater('+')
-    assertEquals(parsePlus("+"), Some(PResult(add, "")))
-    assertEquals(parsePlus("++"), Some(PResult(add, "+")))
-    assertEquals(parsePlus("+1"), Some(PResult(add, "1")))
+    assertEquals(parsePlus("+"), Some(PResult(CharX('+'), "")))
+    assertEquals(parsePlus("++"), Some(PResult(CharX('+'), "+")))
+    assertEquals(parsePlus("+1"), Some(PResult(CharX('+'), "1")))
     assertEquals(parsePlus("1+1"), None)
     assertEquals(parsePlus(""), None)
-
-    assertEquals(add(IntNum(1))(IntNum(1)), Add(IntNum(1))(IntNum(1)))
   }
 
   test("String") {

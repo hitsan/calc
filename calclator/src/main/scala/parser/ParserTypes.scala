@@ -8,4 +8,4 @@ case class PResult[+T](
     rest: String
 )
 type Parser[T] = String => Option[PResult[T]]
-type Operater = Node => Node => Node
+// type OperaterParser[T] = String => Node => Node => Option[PResult[T]]

@@ -8,5 +8,6 @@ object Ast {
     case Div(lhs: Node)(rhs: Node)
     case IntNum(n: Int)
     case Str(id: String)
+    case CharX(c: Char)
   }
 }
