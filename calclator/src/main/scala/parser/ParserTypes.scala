@@ -9,5 +9,3 @@ case class PResult[+T](
 )
 type Parser[T] = String => Option[PResult[T]]
 type Operater = Node => Node => Node
-
-type AA = Node | Node=>Node | Node=>Node=>Node

@@ -1,25 +1,24 @@
 package parser
 
-import Ast.Node
-import Ast.Node._
-import ParserGenerater._
-import PResult.*
-
 object Parser {
-  def parserAnyChar: Parser[Node] = code =>
+  import Ast.Node
+  import Ast.Node._
+  import ParserGenerater._
+  import PResult.*
+
+  def anyChar: Parser[Node] = code =>
     for {
       head <- code.headOption if head.isLetter
     } yield PResult(Str(head.toString), code.tail)
 
-  def parseDigit: Parser[Node] = code =>
+  def digit: Parser[Node] = code =>
     for {
       head <- code.headOption if head.isDigit
-      num = head.asDigit
-    } yield PResult(IntNum(num), code.tail)
+    } yield PResult(IntNum(head.asDigit), code.tail)
 
-  def parseAnyString: Parser[Node] = code =>
+  def anyString: Parser[Node] = code =>
     for {
-      PResult(tokens, rest) <- repeat(parserAnyChar)(code)
+      PResult(tokens, rest) <- repeat(anyChar)(code)
     } yield {
       val str = tokens.foldLeft(Str("")) { (acc, token) =>
         (acc, token) match {
@@ -30,9 +29,9 @@ object Parser {
       PResult(str, rest)
     }
 
-  def parseInt: Parser[Node] = code =>
+  def intNum: Parser[Node] = code =>
     for {
-      PResult(tokens, rest) <- repeat(parseDigit)(code)
+      PResult(tokens, rest) <- repeat(digit)(code)
     } yield {
       val number = tokens.foldLeft(IntNum(0)) { (acc, token) =>
         (acc, token) match {
@@ -42,28 +41,28 @@ object Parser {
       }
       PResult(number, rest)
     }
+  def char(character: Char): Parser[Node] = code =>
+    for {
+      head <- code.headOption if (head == character)
+      str = head.toString
+    } yield PResult(Str(str), code.tail)
 
-  def binExpr(op: Node=>Node=>Node) = op
+  def string(word: String): Parser[Node] = code =>
+    if (code.startsWith(word)) Some(PResult(Str(word), code.drop(word.length)))
+    else None
+
+  def binExpr(op: Node => Node => Node) = op
   val add = binExpr(Add)
   val sub = binExpr(Sub)
   val mul = binExpr(Mul)
   val div = binExpr(Div)
-  def parseOp(op: Char): Parser[Node=>Node=>Node] = code => {
+  def operater(op: Char): Parser[Node => Node => Node] = code => {
     val opMap =
       Map((Str("+"), add), (Str("-"), sub), (Str("*"), mul), (Str("/"), div))
-    val parser = parseChar(op)
+    val parser = char(op)
     for {
       PResult(op, rest) <- parser(code)
       oprater <- opMap get op
     } yield PResult(oprater, rest)
   }
-
-  // Parser Expression
-  def term: Parser[Node] = code => ???
-  // def factor: Parser[Node] = code =>
-  //   chain(unary, repeat(true)(chain(parseOp('*'), unary)))
-
-  def unary: Parser[Node] = code => primary(code)
-  def primary: Parser[Node] = code =>
-    parseInt(code).orElse(parseAnyString(code))
 }

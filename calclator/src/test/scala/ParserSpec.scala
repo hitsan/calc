@@ -5,21 +5,20 @@ class ParserSpec extends munit.FunSuite {
   import parser.Ast.Node._
   import parser.Ast.Node
 
-  // Initial
-  test("isDigit") {
-    assertEquals(parseDigit("1+1"), Some(PResult(IntNum(1), "+1")))
-    assertEquals(parseDigit(""), None)
-    assertEquals(parseDigit("a"), None)
+  test("Digit") {
+    assertEquals(digit("1+1"), Some(PResult(IntNum(1), "+1")))
+    assertEquals(digit(""), None)
+    assertEquals(digit("a"), None)
   }
 
-  test("number") {
-    assertEquals(parseInt("12+3"), Some(PResult(IntNum(12), "+3")))
-    assertEquals(parseInt("+123"), None)
-    assertEquals(parseInt(""), None)
+  test("Number") {
+    assertEquals(intNum("12+3"), Some(PResult(IntNum(12), "+3")))
+    assertEquals(intNum("+123"), None)
+    assertEquals(intNum(""), None)
   }
 
-  test("Op Plus") {
-    val parsePlus = parseOp('+')
+  test("Operater") {
+    val parsePlus = operater('+')
     assertEquals(parsePlus("+"), Some(PResult(add, "")))
     assertEquals(parsePlus("++"), Some(PResult(add, "+")))
     assertEquals(parsePlus("+1"), Some(PResult(add, "1")))
@@ -29,22 +28,18 @@ class ParserSpec extends munit.FunSuite {
     assertEquals(add(IntNum(1))(IntNum(1)), Add(IntNum(1))(IntNum(1)))
   }
 
-  test("primary") {
-    assertEquals(primary("123"), Some(PResult(IntNum(123), "")))
-    assertEquals(primary("12+3"), Some(PResult(IntNum(12), "+3")))
-    assertEquals(primary("123"), Some(PResult(IntNum(123), "")))
-    assertEquals(primary("123abc"), Some(PResult(IntNum(123), "abc")))
-    assertEquals(primary("abc"), Some(PResult(Str("abc"), "")))
-    assertEquals(primary("abc123"), Some(PResult(Str("abc"), "123")))
-    assertEquals(primary("+123"), None)
-    assertEquals(primary(""), None)
+  test("String") {
+    val parser = string("if")
+    assertEquals(parser("if"), Some(PResult(Str("if"), "")))
+    assertEquals(parser("ifelse"), Some(PResult(Str("if"), "else")))
+    assertEquals(parser("11+2"), None)
+    assertEquals(parser(""), None)
   }
 
-  // test("factor") {
-  //   assertEquals(factor("1*2"), Some(PResult(Mul(Integer(1))(Integer(2)), "")))
-  //   assertEquals(factor("1*2*3"), Some(PResult(Mul(Mul(Integer(1))(Integer(2)))(Integer(3)), "")))
-  //   assertEquals(factor(""), None)
-  //   assertEquals(factor("1+2"), None)
-  //   assertEquals(factor("*1*2"), None)
-  // }
+  test("Any string") {
+    assertEquals(anyString("if"), Some(PResult(Str("if"), "")))
+    assertEquals(anyString("ifelse"), Some(PResult(Str("ifelse"), "")))
+    assertEquals(anyString("11+2"), None)
+    assertEquals(anyString(""), None)
+  }
 }
