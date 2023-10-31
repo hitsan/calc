@@ -49,20 +49,16 @@ object Parser {
     if (code.startsWith(word)) Some(PResult(Str(word), code.drop(word.length)))
     else None
 
-  // This function can't directry return Operaters(like Add, Sub, Mul, Div).
-  // Want to directry return Operaters.
-  // def operater(op: Char): Parser[Node] = code => char(op)(code)
   def operater(op: Char): Parser[Operater] = code => {
     for {
       PResult(token, rest) <- char(op)(code)
     } yield {
-      val tok = token match {
-        case CharX('+') => add
-        case CharX('-') => sub
-        case CharX('*') => mul
-        case CharX('/') => div
+      token match {
+        case CharX('+') => PResult(add, rest)
+        case CharX('-') => PResult(sub, rest)
+        case CharX('*') => PResult(mul, rest)
+        case CharX('/') => PResult(div, rest)
       }
-      PResult(tok, rest)
     }
   }
 }

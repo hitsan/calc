@@ -29,7 +29,7 @@ object ParserGenerater {
   }
 
   def chain[T](parsers: Parser[T]*): Parser[List[T]] = code => {
-    val initial: Option[PResult[List[T]]] = Some(PResult(Nil, code))
+    val initial = Option(PResult(List[T](), code))
     (initial /: parsers) { (acc, parser) =>
       for {
         PResult(tokens, code) <- acc
@@ -40,6 +40,7 @@ object ParserGenerater {
 
   def comb(op: Operater)(node: Node): OneHadNode = op(node)
   def comb1(node: Node)(op: OneHadNode): Node = op(node)
+  // def comb2(rhs: OneHadNode)(node2: OneHadNode): OneHadNode = lhs => node2(rhs)(lhs)
   // AND(Binary)
   def and[A, B, C](f: A => B => C)(cur: Parser[A], next: Parser[B]): Parser[C] =
     code =>
@@ -52,7 +53,7 @@ object ParserGenerater {
   def or[T](parsers: Parser[T]*): Parser[T] =
     code => Option(parsers.flatMap(parser => parser(code)).head)
 
-  def applyExpr(parser: Parser[List[T]])(f: List[T] => T): Parser[T] = {
-  ???
-  }
+  // def applyExpr(parsers: Parser[A]*)(f: A => A): Parser[A] = {
+  // ???
+  // }
 }
