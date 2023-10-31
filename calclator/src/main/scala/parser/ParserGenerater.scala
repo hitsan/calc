@@ -32,50 +32,27 @@ object ParserGenerater {
     val initial: Option[PResult[List[T]]] = Some(PResult(Nil, code))
     (initial /: parsers) { (acc, parser) =>
       for {
-        PResult(tokens, rest) <- acc
-        PResult(token, ret) <- parser(rest)
-      } yield PResult(tokens.appended(token), ret)
+        PResult(tokens, code) <- acc
+        PResult(token, rest) <- parser(code)
+      } yield PResult(tokens:+token, rest)
     }
   }
 
-  // def combineTokens(tokens: List[AA]): Node =
-  //   val toks = tokens.tail.reverse
-  //   toks.foldRight(tokens.head)( (acc, token) =>
-  //     acc match {
-  //       case a: Node=>Node => a(token)
-  //       case a: Node => token(a)
-  //     }
-  //   )
+  def comb(op: Operater)(node: Node): OneHadNode = op(node)
+  def comb1(node: Node)(op: OneHadNode): Node = op(node)
+  // AND(Binary)
+  def and[A, B, C](f: A => B => C)(cur: Parser[A], next: Parser[B]): Parser[C] =
+    code =>
+      for {
+        PResult(curToken, curRest) <- cur(code)
+        PResult(nextToken, nextRest) <- next(curRest)
+      } yield PResult(f(curToken)(nextToken), nextRest)
 
-  // def chain2(parsers: Parser[AA]*): Parser[Node] = code => {
-  //   var rest = code
-  //   val initial: Option[List[AA]] = Some(List[AA]())
-  //   val tokens = parsers.foldLeft(initial)((acc, parser) =>
-  //     for {
-  //       PResult(token, ret) <- parser(rest)
-  //       a <- acc
-  //       rest = ret
-  //     } yield a :+ token
-  //   )
-  //   tokens.exists(Some(PResult(combineTokens(tokens.get), rest)))
-  // }
-
-  // def combExpr(ope: Operater)(rhs: Node): Node => Node = ope(rhs)
-
-  // def comb(prev: Parser[Operater], next: Parser[Node]): Parser[Node => Node] =
-  //   code =>
-  //     for {
-  //       PResult(preToken, preRest) <- prev(code)
-  //       PResult(nextToken, nextRest) <- next(preRest)
-  //     } yield PResult(combExpr(preToken)(nextToken), nextRest)
-
-  // def comb2(prev: Parser[Node], next: Parser[Node => Node]): Parser[Node] =
-  //   code =>
-  //     for {
-  //       PResult(preToken, preRest) <- prev(code)
-  //       PResult(nextToken, nextRest) <- next(preRest)
-  //     } yield PResult(nextToken(preToken), nextRest)
-
-  def choice[T](parsers: Parser[T]*): Parser[T] =
+  // OR
+  def or[T](parsers: Parser[T]*): Parser[T] =
     code => Option(parsers.flatMap(parser => parser(code)).head)
+
+  def applyExpr(parser: Parser[List[T]])(f: List[T] => T): Parser[T] = {
+  ???
+  }
 }

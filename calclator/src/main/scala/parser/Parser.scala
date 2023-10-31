@@ -16,18 +16,17 @@ object Parser {
       head <- code.headOption if head.isDigit
     } yield PResult(IntNum(head.asDigit), code.tail)
 
-  def anyString: Parser[Node] = code => {
-    def joinChar(str: Node, char: Node): Str = (str, char) match {
-      case (Str(str), CharX(char)) => Str(str + char)
-      case _                       => Str("")
-    }
+  def joinChar(str: Node, char: Node): Str = (str, char) match {
+    case (Str(str), CharX(char)) => Str(str + char)
+    case _                       => Str("")
+  }
+  def anyString: Parser[Node] = code =>
     for {
       PResult(tokens, rest) <- repeat(anyChar)(code)
     } yield {
       val str = (Str("") /: tokens) { joinChar(_, _) }
       PResult(str, rest)
     }
-  }
 
   def joinNum(num1: Node, num2: Node): IntNum = (num1, num2) match {
     case (IntNum(n1), IntNum(n2)) => IntNum(10 * n1 + n2)
@@ -52,6 +51,18 @@ object Parser {
 
   // This function can't directry return Operaters(like Add, Sub, Mul, Div).
   // Want to directry return Operaters.
-  def operater(op: Char): Parser[Node] = code => char(op)(code)
-  // def m[A, B](op: Char): Parser[A <: B] = code => char(op)(code)
+  // def operater(op: Char): Parser[Node] = code => char(op)(code)
+  def operater(op: Char): Parser[Operater] = code => {
+    for {
+      PResult(token, rest) <- char(op)(code)
+    } yield {
+      val tok = token match {
+        case CharX('+') => add
+        case CharX('-') => sub
+        case CharX('*') => mul
+        case CharX('/') => div
+      }
+      PResult(tok, rest)
+    }
+  }
 }
