@@ -7,26 +7,14 @@ object ParserGenerater {
     code => parser(code.trim)
 
   def repeat[T](parser: Parser[T]): Parser[List[T]] = code =>
-    repeat(true)(parser)(code) match {
-      case Some(Nil, _) => None
-      case value        => value
-    }
+    for {
+      PResult(token, rest) <- parser(code)
+      PResult(tokens, ret) <- repeat(parser)(rest)
+        .orElse(Option(PResult(List[T](), rest)))
+    } yield PResult(token +: tokens, ret)
 
-  def repeat[T](allowZero: true)(parser: Parser[T]): Parser[List[T]] = code => {
-    var isRep = true
-    var rest = code
-    var tokens: List[T] = Nil
-    while (isRep) {
-      parser(rest) match {
-        case Some(PResult(token, ret)) => {
-          rest = ret
-          tokens = tokens.appended(token)
-        }
-        case None => isRep = false
-      }
-    }
-    Option(PResult(tokens, rest))
-  }
+  def repeat[T](allowZero: true)(parser: Parser[T]): Parser[List[T]] = code =>
+    repeat(parser)(code).orElse(Option(PResult(List[T](), code)))
 
   def chain[T](parsers: Parser[T]*): Parser[List[T]] = code => {
     val initial = Option(PResult(List[T](), code))
@@ -34,7 +22,7 @@ object ParserGenerater {
       for {
         PResult(tokens, code) <- acc
         PResult(token, rest) <- parser(code)
-      } yield PResult(tokens:+token, rest)
+      } yield PResult(tokens :+ token, rest)
     }
   }
 
