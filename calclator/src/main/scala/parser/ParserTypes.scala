@@ -17,9 +17,13 @@ type Operater = Node => Node => Node
 type OneHadNode = Node => Node
 type NodeT = Node | OneHadNode | Operater
 
-type Comb[A, B] = (A, B) match {
-  case (Operater, Node)   => OneHadNode
-  case (OneHadNode, Node) => Node
+type No[A] = A match {
+  case Node => Node | Node => No[Node]
+}
+
+type Rec[F[_], A] = A match {
+  case Node => Node | F[Rec[F, Node]]
+  case _ => A | F[Rec[F, A]]
 }
 
 def add: Operater = rhs => lhs => Add(rhs)(lhs)

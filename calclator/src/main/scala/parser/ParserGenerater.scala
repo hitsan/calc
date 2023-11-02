@@ -55,5 +55,5 @@ object ParserGenerater {
   def applyExpr(parser: Parser[List[NodeT]])(f: List[NodeT] => NodeT): Parser[NodeT] = code =>
     for {
       PResult(tokens, rest) <- parser(code)
-    } yield PResult(f(tokens), rest)
+    } yield PResult(f(tokens.flatten), rest)
 }
