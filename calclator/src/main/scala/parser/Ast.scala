@@ -9,5 +9,6 @@ object Ast {
     case IntNum(n: Int)
     case Str(id: String)
     case CharX(c: Char)
+    case Dummy
   }
 }
