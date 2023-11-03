@@ -1,8 +1,8 @@
 package parser
 
 object ParserGenerater {
-  import Ast.Node
-  import Ast.Node._
+  import Node._
+
   def skipSpace[T](parser: Parser[T]): Parser[T] =
     code => parser(code.trim)
 
@@ -37,22 +37,22 @@ object ParserGenerater {
   //       PResult(nextToken, nextRest) <- next(curRest)
   //     } yield PResult(f(curToken)(nextToken), nextRest)
 
-  def makeAst(tokens: List[NodeT]): NodeT = {
-    val initial: NodeT = Dummy
-    (initial /: tokens){(ast, token) =>
-      (ast, token) match {
-        case (Dummy, node: Node) => node
-        case (node: Node, op: Operater) => op(node)
-        case (h: OneHadNode, node: Node) => h(node)
-      }
-    }
-  }
+  // def makeAst(tokens: List[Node]): Node = {
+  //   val initial: Node = Dummy
+  //   (initial /: tokens){(ast, token) =>
+  //     (ast, token) match {
+  //       case (Dummy, node: Node) => node
+  //       case (node: Node, op: Operater) => op(node)
+  //       case (h: OneHadNode, node: Node) => h(node)
+  //     }
+  //   }
+  // }
 
   // OR
   def or[T](parsers: Parser[T]*): Parser[T] =
     code => Option(parsers.flatMap(parser => parser(code)).head)
 
-  def applyExpr(parser: Parser[List[NodeT]])(f: List[NodeT] => NodeT): Parser[NodeT] = code =>
+  def applyExpr(parser: Parser[List[Node]])(f: List[Node] => Node): Parser[Node] = code =>
     for {
       PResult(tokens, rest) <- parser(code)
     } yield PResult(f(tokens), rest)
