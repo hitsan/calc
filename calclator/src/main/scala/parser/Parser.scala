@@ -48,5 +48,18 @@ object Parser {
     if (code.startsWith(word)) Some(PResult(Str(word), code.drop(word.length)))
     else None
 
-  def operater(op: OpChar): Parser[Node] = code => char(op)(code)
+  // def operater(op: OpChar): Parser[Node] = code => char(op)(code)
+  def operater(op: OpChar): Parser[TwoHand] = code => {
+    for {
+      PResult(token, rest) <- char(op)(code)
+    } yield {
+      token match {
+        case Achar('+') => PResult(add, rest)
+        case Achar('-') => PResult(sub, rest)
+        case Achar('*') => PResult(mul, rest)
+        case Achar('/') => PResult(div, rest)
+        case _          => null
+      }
+    }
+  }
 }

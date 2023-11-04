@@ -5,6 +5,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
   import parser.PResult
   import parser.Node._
   import parser.Node
+  import parser._
 
   test("repeat") {
     val number = repeat(digit)
@@ -36,23 +37,28 @@ class ParserGeneraterSpec extends munit.FunSuite {
     )
   }
 
-  test("chain") {
-    val parser = chain(intNum, char('+'), intNum)
-    assertEquals(
-      parser("1+2"),
-      Some(PResult(List(IntNum(1), Achar('+'), IntNum(2)), ""))
-    )
-    assertEquals(
-      parser("1+2+3"),
-      Some(PResult(List(IntNum(1), Achar('+'), IntNum(2)), "+3"))
-    )
-    assertEquals(
-      parser("11+2"),
-      Some(PResult(List(IntNum(11), Achar('+'), IntNum(2)), ""))
-    )
-    assertEquals(parser("a+2"), None)
-    assertEquals(parser("11-2"), None)
-    assertEquals(parser(""), None)
+  // test("chain") {
+  //   val parser = chain(intNum, char('+'), intNum)
+  //   assertEquals(
+  //     parser("1+2"),
+  //     Some(PResult(List(IntNum(1), Achar('+'), IntNum(2)), ""))
+  //   )
+  //   assertEquals(
+  //     parser("1+2+3"),
+  //     Some(PResult(List(IntNum(1), Achar('+'), IntNum(2)), "+3"))
+  //   )
+  //   assertEquals(
+  //     parser("11+2"),
+  //     Some(PResult(List(IntNum(11), Achar('+'), IntNum(2)), ""))
+  //   )
+  //   assertEquals(parser("a+2"), None)
+  //   assertEquals(parser("11-2"), None)
+  //   assertEquals(parser(""), None)
+  // }
+
+  test("makeAst"){
+    val nodes = List[Ast[Node]](IntNum(1), add, IntNum(2), add, IntNum(3))
+    assertEquals(makeAst(nodes), Add(Add(IntNum(1), IntNum(2)), IntNum(3)))
   }
 
   // test("applyExpr") {

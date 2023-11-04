@@ -4,6 +4,7 @@ class ParserSpec extends munit.FunSuite {
   import parser.PResult
   import parser.Node._
   import parser.Node
+  import parser._
 
   test("Digit") {
     assertEquals(digit("1+1"), Some(PResult(IntNum(1), "+1")))
@@ -17,6 +18,7 @@ class ParserSpec extends munit.FunSuite {
     assertEquals(intNum(""), None)
   }
 
+  // Cannot parse only operater
   test("Operater") {
     val parsePlus = operater('+')
     assertEquals(parsePlus("1+1"), None)

@@ -37,22 +37,22 @@ object ParserGenerater {
   //       PResult(nextToken, nextRest) <- next(curRest)
   //     } yield PResult(f(curToken)(nextToken), nextRest)
 
-  // def makeAst(tokens: List[Node]): Node = {
-  //   val initial: Node = Dummy
-  //   (initial /: tokens){(ast, token) =>
-  //     (ast, token) match {
-  //       case (Dummy, node: Node) => node
-  //       case (node: Node, op: Operater) => op(node)
-  //       case (h: OneHadNode, node: Node) => h(node)
-  //     }
-  //   }
-  // }
+  def makeAst(tokens: List[Ast[Node]]): Ast[Node] = {
+    (tokens.head /: tokens.tail) { (ast, token) =>
+      (ast, token) match {
+        case (rhs: Node, op: TwoHand) => op(rhs)
+        case (op: OneHand, lhs: Node) => op(lhs)
+      }
+    }
+  }
 
   // OR
   def or[T](parsers: Parser[T]*): Parser[T] =
     code => Option(parsers.flatMap(parser => parser(code)).head)
 
-  def applyExpr(parser: Parser[List[Node]])(f: List[Node] => Node): Parser[Node] = code =>
+  def applyExpr(
+      parser: Parser[List[Node]]
+  )(f: List[Node] => Node): Parser[Node] = code =>
     for {
       PResult(tokens, rest) <- parser(code)
     } yield PResult(f(tokens), rest)
