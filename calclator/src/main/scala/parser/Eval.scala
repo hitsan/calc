@@ -1,7 +1,7 @@
 package parser
 
 object Eval {
-  import Node._
+  import Token._
   import Parser._
 
   // Parser Expression

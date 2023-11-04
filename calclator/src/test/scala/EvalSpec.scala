@@ -1,8 +1,8 @@
 class EvalSpec extends munit.FunSuite {
   import parser.Eval._
   import parser.PResult
-  import parser.Node._
-  import parser.Node
+  import parser.Token._
+  import parser.Token
 
   test("primary") {
     assertEquals(primary("123"), Some(PResult(IntNum(123), "")))

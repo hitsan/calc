@@ -1,7 +1,7 @@
 package parser
 
 object Parser {
-  import Node._
+  import Token._
   import ParserGenerater._
   import PResult.*
 
@@ -49,7 +49,7 @@ object Parser {
     else None
 
   // def operater(op: OpChar): Parser[Node] = code => char(op)(code)
-  def operater(op: OpChar): Parser[TwoHand] = code => {
+  def operater(op: Operater): Parser[TwoHand] = code => {
     for {
       PResult(token, rest) <- char(op)(code)
     } yield {

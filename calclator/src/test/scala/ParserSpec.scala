@@ -2,8 +2,8 @@ class ParserSpec extends munit.FunSuite {
   import parser.Parser._
   import parser.ParserGenerater._
   import parser.PResult
-  import parser.Node._
-  import parser.Node
+  import parser.Token._
+  import parser.Token
   import parser._
 
   test("Digit") {

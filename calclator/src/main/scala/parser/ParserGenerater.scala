@@ -1,7 +1,7 @@
 package parser
 
 object ParserGenerater {
-  import Node._
+  import Token._
 
   def skipSpace[T](parser: Parser[T]): Parser[T] =
     code => parser(code.trim)
@@ -16,8 +16,8 @@ object ParserGenerater {
   def repeat[T](allowZero: true)(parser: Parser[T]): Parser[List[T]] = code =>
     repeat(parser)(code).orElse(Option(PResult(List[T](), code)))
 
-  def chain[A](parsers: Parser[A]*): Parser[List[A]] = code => {
-    val initial = Option(PResult(List[A](), code))
+  def chain[T](parsers: Parser[T]*): Parser[List[T]] = code => {
+    val initial = Option(PResult(List[T](), code))
     (initial /: parsers) { (acc, parser) =>
       for {
         PResult(tokens, code) <- acc
@@ -37,11 +37,11 @@ object ParserGenerater {
   //       PResult(nextToken, nextRest) <- next(curRest)
   //     } yield PResult(f(curToken)(nextToken), nextRest)
 
-  def makeAst(tokens: List[Ast[Node]]): Ast[Node] = {
+  def makeAst(tokens: List[Node]): Node = {
     (tokens.head /: tokens.tail) { (ast, token) =>
       (ast, token) match {
-        case (rhs: Node, op: TwoHand) => op(rhs)
-        case (op: OneHand, lhs: Node) => op(lhs)
+        case (rhs: Token, op: TwoHand) => op(rhs)
+        case (op: OneHand, lhs: Token) => op(lhs)
       }
     }
   }
