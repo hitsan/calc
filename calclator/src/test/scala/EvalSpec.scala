@@ -2,17 +2,6 @@ class EvalSpec extends munit.FunSuite {
   import parser.Eval._
   import parser.PResult
   import parser.Token._
-  import parser.Token
-
-  import parser._
-  import parser.Parser._
-  import parser.ParserGenerater._
-  import parser._
-
-  test("primary") {
-    val k = List[Or[Parser, Node, TwoHand]](intNum, operater('+'), intNum)
-    println(k)
-  }
 
   // test("primary") {
   //   assertEquals(primary("123"), Some(PResult(IntNum(123), "")))

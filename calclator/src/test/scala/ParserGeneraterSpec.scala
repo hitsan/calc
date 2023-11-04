@@ -2,10 +2,8 @@ class ParserGeneraterSpec extends munit.FunSuite {
   import parser._
   import parser.Parser._
   import parser.ParserGenerater._
-  import parser.PResult
   import parser.Token._
   import parser.Token
-  import parser._
 
   test("repeat") {
     val number = repeat(digit)
@@ -55,39 +53,65 @@ class ParserGeneraterSpec extends munit.FunSuite {
     assertEquals(parser("11-2"), None)
     assertEquals(parser(""), None)
   }
-  // test("or") {
-  //   val parser = or(char('-'), char('+'))
-  //   assertEquals(parser("+2"), Some(PResult(Achar('+'), "2")))
-  //   assertEquals(parser("-2"), Some(PResult(Achar('-'), "2")))
-  //   assertEquals(parser("*2"), None)
-  //   assertEquals(parser("a+2"), None)
-  //   assertEquals(parser("11-2"), None)
-  //   assertEquals(parser(""), None)
-  // }
+
+  test("or") {
+    val op = or(char('-'), char('+'))
+    assertEquals(op("+2"), Some(PResult(Achar('+'), "2")))
+    assertEquals(op("-2"), Some(PResult(Achar('-'), "2")))
+    assertEquals(op("*2"), None)
+    assertEquals(op("a+2"), None)
+    assertEquals(op("11-2"), None)
+    assertEquals(op(""), None)
+
+    val intStr = or(intNum, anyString)
+    assertEquals(intStr("+2"), None)
+    assertEquals(intStr("-2"), None)
+    assertEquals(intStr("*2"), None)
+    assertEquals(intStr("a+2"), Some(PResult(Str("a"), "+2")))
+    assertEquals(intStr("ab+2"), Some(PResult(Str("ab"), "+2")))
+    assertEquals(intStr("11-2"), Some(PResult(IntNum(11), "-2")))
+    assertEquals(intStr(""), None)
+
+    val charStr = or(anyChar, anyString)
+    assertEquals(charStr("a+2"), Some(PResult(Achar('a'), "+2")))
+    assertEquals(charStr("ab+2"), Some(PResult(Achar('a'), "b+2")))
+
+    val strChar = or(anyString, anyChar)
+    assertEquals(strChar("a+2"), Some(PResult(Str("a"), "+2")))
+    assertEquals(strChar("ab+2"), Some(PResult(Str("ab"), "+2")))
+
+    val str = or(string("if"), string("else"))
+    assertEquals(str("ifelse"), Some(PResult(Str("if"), "else")))
+    assertEquals(str("elseif"), Some(PResult(Str("else"), "if")))
+    assertEquals(str("ab+2"), None)
+  }
 
   test("makeAst") {
     val nodes = List[Node](IntNum(1), add, IntNum(2), add, IntNum(3))
     assertEquals(makeAst(nodes), Add(Add(IntNum(1), IntNum(2)), IntNum(3)))
   }
 
-  // test("applyExpr") {
-  //   val p = and(intNum, operater('+'), intNum)
-  //   val parser = applyExpr(p)(makeAst)
+  test("applyExpr") {
+    val k = intNum
+    val m = operater('+')
+    val p = and(intNum)
+    val p1 = and(operater('+'))
+    val parser = applyExpr(p)(makeAst)
 
-  //   assertEquals(
-  //     parser("1+2"),
-  //     Some(PResult(Add(IntNum(1), IntNum(2)), ""))
-  //   )
-  //   assertEquals(
-  //     parser("1+2+3"),
-  //     Some(PResult(Add(IntNum(1), IntNum(2)), "+3"))
-  //   )
-  //   assertEquals(
-  //     parser("11+2"),
-  //     Some(PResult(Add(IntNum(11), IntNum(2)), ""))
-  //   )
-  //   assertEquals(parser("a+2"), None)
-  //   assertEquals(parser("11-2"), None)
-  //   assertEquals(parser(""), None)
-  // }
+    assertEquals(
+      parser("1+2"),
+      Some(PResult(Add(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      parser("1+2+3"),
+      Some(PResult(Add(IntNum(1), IntNum(2)), "+3"))
+    )
+    assertEquals(
+      parser("11+2"),
+      Some(PResult(Add(IntNum(11), IntNum(2)), ""))
+    )
+    assertEquals(parser("a+2"), None)
+    assertEquals(parser("11-2"), None)
+    assertEquals(parser(""), None)
+  }
 }

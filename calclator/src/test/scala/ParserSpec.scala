@@ -1,10 +1,7 @@
 class ParserSpec extends munit.FunSuite {
-  import parser.Parser._
-  import parser.ParserGenerater._
-  import parser.PResult
-  import parser.Token._
-  import parser.Token
   import parser._
+  import parser.Parser._
+  import parser.Token._
 
   test("Digit") {
     assertEquals(digit("1+1"), Some(PResult(IntNum(1), "+1")))

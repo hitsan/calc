@@ -20,13 +20,13 @@ enum Token:
   case Achar(char: Char)
 type OneHand = Token => Token
 type TwoHand = Token => Token => Token
-type Node = Token | OneHand | TwoHand
+// type Node = Token | OneHand | TwoHand
 
 def add: TwoHand = lhs => rhs => Add(lhs, rhs)
 def sub: TwoHand = lhs => rhs => Sub(lhs, rhs)
 def mul: TwoHand = lhs => rhs => Mul(lhs, rhs)
 def div: TwoHand = lhs => rhs => Div(lhs, rhs)
 
-type Rec[A] = A match
-  case Token => Token | List[Rec[Token]]
-  case _     => A | List[Rec[A]]
+// type Rec[A] = A match
+//   case Token => Token | List[Rec[Token]]
+//   case _     => A | List[Rec[A]]
