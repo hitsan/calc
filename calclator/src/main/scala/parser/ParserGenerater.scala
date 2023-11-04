@@ -16,17 +16,16 @@ object ParserGenerater {
   def repeat[T](allowZero: true)(parser: Parser[T]): Parser[List[T]] =
     code => repeat(parser)(code).orElse(Option(PResult(List[T](), code)))
 
-  def and(parsers: Parser[Token] | Parser[TwoHand]*): Parser[List[Token | TwoHand]] = {
-    code => {
-      val initial = Option(PResult(List[Token | TwoHand](), code))
+  def and[A, B](parsers: Parser[A] | Parser[B]*): Parser[List[A | B]] = code =>
+    {
+      val initial = Option(PResult(List[A | B](), code))
       (initial /: parsers) { (acc, parser) =>
         for {
           PResult(tokens, code) <- acc
-          case PResult[(Token | TwoHand)](token, rest) <- parser(code)
+          case PResult[(A | B)](token, rest) <- parser(code)
         } yield PResult(tokens :+ token, rest)
       }
     }
-  }
 
   def or(parsers: Parser[Token]*): Parser[Token] = code =>
     parsers.flatMap(parser => parser(code)).headOption
