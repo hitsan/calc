@@ -8,7 +8,7 @@ case class PResult[T](
     rest: String
 )
 type Parser[T] = String => Option[PResult[T]]
-type Or[A[_], B, C] = A[B] | A[C]
+// type Or[A[_], B, C] = A[B] | A[C]
 
 enum Token:
   case Add(lhs: Token, rhs: Token)
@@ -20,7 +20,7 @@ enum Token:
   case Achar(char: Char)
 type OneHand = Token => Token
 type TwoHand = Token => Token => Token
-// type Node = Token | OneHand | TwoHand
+type Node = Token | OneHand | TwoHand
 
 def add: TwoHand = lhs => rhs => Add(lhs, rhs)
 def sub: TwoHand = lhs => rhs => Sub(lhs, rhs)

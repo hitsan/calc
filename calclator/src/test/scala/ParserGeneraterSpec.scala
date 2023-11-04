@@ -92,10 +92,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
   }
 
   test("applyExpr") {
-    val k = intNum
-    val m = operater('+')
-    val p = and(intNum)
-    val p1 = and(operater('+'))
+    val p = and(intNum, operater('+'), intNum)
     val parser = applyExpr(p)(makeAst)
 
     assertEquals(
