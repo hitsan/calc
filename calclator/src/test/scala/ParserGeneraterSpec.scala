@@ -38,7 +38,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
   }
 
   test("chain") {
-    val parser = chain(intNum, char('+'), intNum)
+    val parser = and(intNum, char('+'), intNum)
     assertEquals(
       parser("1+2"),
       Some(PResult(List(IntNum(1), Achar('+'), IntNum(2)), ""))

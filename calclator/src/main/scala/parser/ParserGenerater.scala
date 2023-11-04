@@ -16,7 +16,7 @@ object ParserGenerater {
   def repeat[T](allowZero: true)(parser: Parser[T]): Parser[List[T]] = code =>
     repeat(parser)(code).orElse(Option(PResult(List[T](), code)))
 
-  def chain[T](parsers: Parser[T]*): Parser[List[T]] = code => {
+  def and[T](parsers: Parser[T]*): Parser[List[T]] = code => {
     val initial = Option(PResult(List[T](), code))
     (initial /: parsers) { (acc, parser) =>
       for {
@@ -25,17 +25,8 @@ object ParserGenerater {
       } yield PResult(tokens :+ token, rest)
     }
   }
-
-  // def comb(op: Operater)(node: Node): OneHadNode = op(node)
-  // def comb1(node: Node)(op: OneHadNode): Node = op(node)
-  // def comb2(rhs: OneHadNode)(node2: OneHadNode): OneHadNode = lhs => node2(rhs)(lhs)
-  // AND(Binary)
-  // def and[A, B, C](f: A => B => C)(cur: Parser[A], next: Parser[B]): Parser[C] =
-  //   code =>
-  //     for {
-  //       PResult(curToken, curRest) <- cur(code)
-  //       PResult(nextToken, nextRest) <- next(curRest)
-  //     } yield PResult(f(curToken)(nextToken), nextRest)
+  def or[T](parsers: Parser[T]*): Parser[T] =
+    code => Option(parsers.flatMap(parser => parser(code)).head)
 
   def makeAst(tokens: List[Node]): Node = {
     (tokens.head /: tokens.tail) { (ast, token) =>
@@ -45,10 +36,6 @@ object ParserGenerater {
       }
     }
   }
-
-  // OR
-  def or[T](parsers: Parser[T]*): Parser[T] =
-    code => Option(parsers.flatMap(parser => parser(code)).head)
 
   def applyExpr(
       parser: Parser[List[Node]]
