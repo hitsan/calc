@@ -3,21 +3,21 @@ package parser
 object ParserGenerater {
   import Token._
 
-  def skipSpace[T](parser: Parser[T]): Parser[T] =
+  def skipSpace(parser: Parser[Node]): Parser[Node] =
     code => parser(code.trim)
 
-  def repeat[T](parser: Parser[T]): Parser[List[T]] = code =>
+  def repeat(parser: Parser[Node]): Parser[List[Node]] = code =>
     for {
       PResult(token, rest) <- parser(code)
       PResult(tokens, ret) <- repeat(parser)(rest)
-        .orElse(Option(PResult(List[T](), rest)))
+        .orElse(Option(PResult(List[Node](), rest)))
     } yield PResult(token +: tokens, ret)
 
-  def repeat[T](allowZero: true)(parser: Parser[T]): Parser[List[T]] = code =>
-    repeat(parser)(code).orElse(Option(PResult(List[T](), code)))
+  def repeat(allowZero: true)(parser: Parser[Node]): Parser[List[Node]] = code =>
+    repeat(parser)(code).orElse(Option(PResult(List[Node](), code)))
 
-  def and[T](parsers: Parser[T]*): Parser[List[T]] = code => {
-    val initial = Option(PResult(List[T](), code))
+  def and(parsers: Parser[Node]*): Parser[List[Node]] = code => {
+    val initial = Option(PResult(List[Node](), code))
     (initial /: parsers) { (acc, parser) =>
       for {
         PResult(tokens, code) <- acc
@@ -25,7 +25,7 @@ object ParserGenerater {
       } yield PResult(tokens :+ token, rest)
     }
   }
-  def or[T](parsers: Parser[T]*): Parser[T] =
+  def or(parsers: Parser[Node]*): Parser[Node] =
     code => Option(parsers.flatMap(parser => parser(code)).head)
 
   def makeAst(tokens: List[Node]): Node = {

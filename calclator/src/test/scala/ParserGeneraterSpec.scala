@@ -37,7 +37,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
     )
   }
 
-  test("chain") {
+  test("and") {
     val parser = and(intNum, char('+'), intNum)
     assertEquals(
       parser("1+2"),
@@ -55,36 +55,37 @@ class ParserGeneraterSpec extends munit.FunSuite {
     assertEquals(parser("11-2"), None)
     assertEquals(parser(""), None)
   }
+  // test("or") {
+  //   val parser = or(char('-'), char('+'))
+  //   assertEquals(parser("+2"), Some(PResult(Achar('+'), "2")))
+  //   assertEquals(parser("-2"), Some(PResult(Achar('-'), "2")))
+  //   assertEquals(parser("*2"), None)
+  //   assertEquals(parser("a+2"), None)
+  //   assertEquals(parser("11-2"), None)
+  //   assertEquals(parser(""), None)
+  // }
 
-  test("makeAst"){
+  test("makeAst") {
     val nodes = List[Node](IntNum(1), add, IntNum(2), add, IntNum(3))
     assertEquals(makeAst(nodes), Add(Add(IntNum(1), IntNum(2)), IntNum(3)))
   }
 
   // test("applyExpr") {
-  //   val p = chain(intNum, operater('+'), intNum)
+  //   val p = and(intNum, operater('+'), intNum)
   //   val parser = applyExpr(p)(makeAst)
 
   //   assertEquals(
   //     parser("1+2"),
-  //     Some(PResult(Add(IntNum(1))(IntNum(2)), ""))
+  //     Some(PResult(Add(IntNum(1), IntNum(2)), ""))
   //   )
   //   assertEquals(
   //     parser("1+2+3"),
-  //     Some(PResult(Add(IntNum(1))(IntNum(2)), "+3"))
+  //     Some(PResult(Add(IntNum(1), IntNum(2)), "+3"))
   //   )
   //   assertEquals(
   //     parser("11+2"),
-  //     Some(PResult(Add(IntNum(11))(IntNum(2)), ""))
+  //     Some(PResult(Add(IntNum(11), IntNum(2)), ""))
   //   )
-  //   assertEquals(parser("a+2"), None)
-  //   assertEquals(parser("11-2"), None)
-  //   assertEquals(parser(""), None)
-  // }
-  // test("and") {
-  //   val parser = and(comb1)(intNum, and(comb2)(and(comb)(operater('+'), intNum), and(comb)(operater('+'), intNum)))
-  //   // assertEquals(parser("1+2"), Some(PResult(Add(IntNum(2))(IntNum(1)), "")))
-  //   assertEquals(parser("1+2+3"), Some(PResult(Add(IntNum(2))(IntNum(1)), "")))
   //   assertEquals(parser("a+2"), None)
   //   assertEquals(parser("11-2"), None)
   //   assertEquals(parser(""), None)

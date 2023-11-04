@@ -49,7 +49,7 @@ object Parser {
     else None
 
   // def operater(op: OpChar): Parser[Node] = code => char(op)(code)
-  def operater(op: Operater): Parser[TwoHand] = code => {
+  def operater(op: Operater): Parser[TwoHand] = code =>
     for {
       PResult(token, rest) <- char(op)(code)
     } yield {
@@ -61,5 +61,4 @@ object Parser {
         case _          => null
       }
     }
-  }
 }
