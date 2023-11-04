@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   sbt_env:
-    image: scala_env-sbt_env
+    build: .
     volumes:
       - ./:/app
     working_dir: /app
