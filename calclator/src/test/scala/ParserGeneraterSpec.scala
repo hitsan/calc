@@ -19,7 +19,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
   }
 
   test("repeat Zero or More") {
-    val number = repeat(true)(digit)
+    val number = repeat0(digit)
     assertEquals(
       number("123"),
       Some(PResult(List(IntNum(1), IntNum(2), IntNum(3)), ""))
@@ -87,6 +87,12 @@ class ParserGeneraterSpec extends munit.FunSuite {
     assertEquals(str("ab+2"), None)
   }
 
+  // test("comb or and") {
+  //   val p = and(intNum, or(operater('-'), operater('+')), intNum)
+  //   println(p("1+2"))
+  //   println(p("1*2"))
+  // }
+
   test("makeAst") {
     val nodes = List[Node](IntNum(1), add, IntNum(2), add, IntNum(3))
     assertEquals(makeAst(nodes), Add(Add(IntNum(1), IntNum(2)), IntNum(3)))
@@ -111,5 +117,29 @@ class ParserGeneraterSpec extends munit.FunSuite {
     assertEquals(parser("a+2"), None)
     assertEquals(parser("11-2"), None)
     assertEquals(parser(""), None)
+
+    val p1 = and(intNum, or(operater('-'), operater('+')), intNum)
+    val parser1 = applyExpr(p1)(makeAst)
+    assertEquals(
+      parser1("1+2"),
+      Some(PResult(Add(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      parser1("1-2"),
+      Some(PResult(Sub(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(parser1("1*2"), None)
+
+    val p2 = and(intNum, repeat0(and(operater('+'), intNum)))
+    val parser2 = applyExpr1(p2)(makeAst1)
+    assertEquals(
+      parser2("1+2+3"),
+      Some(PResult(Add(Add(IntNum(1), IntNum(2)), IntNum(3)), ""))
+    )
+    assertEquals(
+      parser2("1+2a"),
+      Some(PResult(Add(IntNum(1), IntNum(2)), "a"))
+    )
+    assertEquals(parser2("1-2"), Some(PResult(IntNum(1), "-2")))
   }
 }

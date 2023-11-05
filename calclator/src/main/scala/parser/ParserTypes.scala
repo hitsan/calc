@@ -31,6 +31,11 @@ def sub: TwoHand = lhs => rhs => Sub(lhs, rhs)
 def mul: TwoHand = lhs => rhs => Mul(lhs, rhs)
 def div: TwoHand = lhs => rhs => Div(lhs, rhs)
 
-// type Rec[A] = A match
-//   case Token => Token | List[Rec[Token]]
-//   case _     => A | List[Rec[A]]
+type Rec[A] = A match
+  case Node => List[Rec[Node]]
+  case _     => List[Rec[A]]
+
+extension (r: Rec[Node])
+  def headNode() = {
+    r.head
+  }
