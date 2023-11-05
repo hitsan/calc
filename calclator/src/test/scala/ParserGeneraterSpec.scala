@@ -87,17 +87,6 @@ class ParserGeneraterSpec extends munit.FunSuite {
     assertEquals(str("ab+2"), None)
   }
 
-  // test("comb or and") {
-  //   val p = and(intNum, or(operater('-'), operater('+')), intNum)
-  //   println(p("1+2"))
-  //   println(p("1*2"))
-  // }
-
-  test("makeAst") {
-    val nodes = List[Node](IntNum(1), add, IntNum(2), add, IntNum(3))
-    assertEquals(makeAst(nodes), Add(Add(IntNum(1), IntNum(2)), IntNum(3)))
-  }
-
   test("applyExpr") {
     val p = and(intNum, operater('+'), intNum)
     val parser = applyExpr(p)(makeAst)
@@ -141,5 +130,8 @@ class ParserGeneraterSpec extends munit.FunSuite {
       Some(PResult(Add(IntNum(1), IntNum(2)), "a"))
     )
     assertEquals(parser2("1-2"), Some(PResult(IntNum(1), "-2")))
+    assertEquals(parser2("1"), Some(PResult(IntNum(1), "")))
+    assertEquals(parser2(""), None)
+    assertEquals(parser2("a+a"), None)
   }
 }

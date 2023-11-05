@@ -10,9 +10,9 @@ case class PResult[T](
 type Parser[A] = String => Option[PResult[A]]
 
 type OrParser[A, B] = Parser[A] | Parser[B]
-type OrList[A, B, C] = A match
-  case Parser[_] => Parser[List[B | C]]
-  case PResult[_] => PResult[List[B | C]]
+// type OrList[A, B, C] = A match
+//   case Parser[_] => Parser[List[B | C]]
+//   case PResult[_] => PResult[List[B | C]]
 
 enum Token:
   case Add(lhs: Token, rhs: Token)
@@ -30,12 +30,3 @@ def add: TwoHand = lhs => rhs => Add(lhs, rhs)
 def sub: TwoHand = lhs => rhs => Sub(lhs, rhs)
 def mul: TwoHand = lhs => rhs => Mul(lhs, rhs)
 def div: TwoHand = lhs => rhs => Div(lhs, rhs)
-
-type Rec[A] = A match
-  case Node => List[Rec[Node]]
-  case _     => List[Rec[A]]
-
-extension (r: Rec[Node])
-  def headNode() = {
-    r.head
-  }

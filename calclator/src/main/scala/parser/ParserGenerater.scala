@@ -30,8 +30,8 @@ object ParserGenerater {
 
   def makeAst[A <: List[_]](tokens: A): Node = {
     val initial = tokens.head match {
-      case a: Node    => a
-      case a: List[_] => makeAst(a)
+      case head: Node    => head
+      case head: List[_] => makeAst(head)
     }
     (initial /: tokens.tail) { (ast, token) =>
       (ast, token) match {
