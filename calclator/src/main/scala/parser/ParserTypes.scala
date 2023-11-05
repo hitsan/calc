@@ -7,8 +7,12 @@ case class PResult[T](
     token: T,
     rest: String
 )
-type Parser[T] = String => Option[PResult[T]]
-// type Or[A[_], B, C] = A[B] | A[C]
+type Parser[A] = String => Option[PResult[A]]
+
+type OrParser[A, B] = Parser[A] | Parser[B]
+type OrList[A, B, C] = A match
+  case Parser[_] => Parser[List[B | C]]
+  case PResult[_] => PResult[List[B | C]]
 
 enum Token:
   case Add(lhs: Token, rhs: Token)

@@ -83,6 +83,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
     val str = or(string("if"), string("else"))
     assertEquals(str("ifelse"), Some(PResult(Str("if"), "else")))
     assertEquals(str("elseif"), Some(PResult(Str("else"), "if")))
+    assertEquals(str("eiflseif"), None)
     assertEquals(str("ab+2"), None)
   }
 
