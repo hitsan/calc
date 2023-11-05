@@ -131,7 +131,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
     assertEquals(parser1("1*2"), None)
 
     val p2 = and(intNum, repeat0(and(operater('+'), intNum)))
-    val parser2 = applyExpr1(p2)(makeAst1)
+    val parser2 = applyExpr(p2)(makeAst)
     assertEquals(
       parser2("1+2+3"),
       Some(PResult(Add(Add(IntNum(1), IntNum(2)), IntNum(3)), ""))

@@ -28,34 +28,14 @@ object ParserGenerater {
   def or[A](parsers: Parser[A]*): Parser[A] = code =>
     parsers.flatMap(parser => parser(code)).headOption
 
-  def makeAst(tokens: List[Node]): Node = {
-    (tokens.head /: tokens.tail) { (ast, token) =>
-      (ast, token) match {
-        case (rhs: Token, op: TwoHand) => op(rhs)
-        case (op: OneHand, lhs: Token) => op(lhs)
-        case _                         => ast
-      }
-    }
-  }
-
-  def applyExpr(
-      parser: Parser[List[Token | TwoHand]]
-  )(f: List[Node] => Node): Parser[Node] = code =>
-    for {
-      PResult(tokens, rest) <- parser(code)
-    } yield PResult(f(tokens), rest)
-
-  // [1, [[add, 1],[add, 1]]]
-  // [1,[add, 1],[add, 1]]
-  // [1, add, 1]
-  // add(1,1)
-  def makeAst1[A <: List[_]](tokens: A): Node = {
+  def makeAst[A <: List[_]](tokens: A): Node = {
     val initial = tokens.head match {
-      case a: Node => a
+      case a: Node    => a
+      case a: List[_] => makeAst(a)
     }
     (initial /: tokens.tail) { (ast, token) =>
       (ast, token) match {
-        case (n: Node, l: List[_])     => makeAst1(n +: l)
+        case (n: Node, l: List[_])     => makeAst(n +: l)
         case (rhs: Token, op: TwoHand) => op(rhs)
         case (op: OneHand, lhs: Token) => op(lhs)
         case (_, _)                    => ast
@@ -63,7 +43,7 @@ object ParserGenerater {
     }
   }
 
-  def applyExpr1[A](parser: Parser[A])(f: A => Node): Parser[Node] = code =>
+  def applyExpr[A](parser: Parser[A])(f: A => Node): Parser[Node] = code =>
     for {
       PResult(tokens, rest) <- parser(code)
     } yield PResult(f(tokens), rest)
