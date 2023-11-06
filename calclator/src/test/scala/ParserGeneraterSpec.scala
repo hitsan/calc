@@ -3,7 +3,6 @@ class ParserGeneraterSpec extends munit.FunSuite {
   import parser.Parser._
   import parser.ParserGenerater._
   import parser.Token._
-  import parser.Token
 
   test("repeat") {
     val number = repeat(digit)
