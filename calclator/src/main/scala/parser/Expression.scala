@@ -6,6 +6,7 @@ object Expression {
   import Combinator._
 
   // Parser Expression
+  def expression: Parser[Node] = ???
   def term: Parser[Node] =
     applyExpr(and(factor, rep0(and(or(operater('+'), operater('-')), factor))))(
       makeAst
