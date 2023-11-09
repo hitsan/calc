@@ -3,12 +3,15 @@ package parser
 object Eval {
   import Token._
   import Parser._
+  import ParserGenerater._
 
   // Parser Expression
-  def term: Parser[Node] = code => ???
-  // def factor: Parser[Node] = code =>
-  //   chain(unary, repeat(true)(chain(operater('*'), unary)))
+  // def term: Parser[Node] = code => ???
 
-  def unary: Parser[Node] = code => primary(code)
-  def primary: Parser[Node] = code => intNum(code).orElse(anyString(code))
+  // def factor[A]: Parser[List[Token | List[List[TwoHand | Token]]]] =
+  def factor: Parser[List[Token | List[List[TwoHand | Token]]]] =
+    and(unary, repeat0(and(or(operater('*'), operater('/')), unary)))
+
+  def unary: Parser[Token] = primary
+  def primary: Parser[Token] = or(intNum, anyString)
 }
