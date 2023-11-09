@@ -1,5 +1,5 @@
 class PrimitiveSpec extends munit.FunSuite {
-  import parser._
+  import parser.PResult
   import parser.Primitive._
   import parser.Token._
 

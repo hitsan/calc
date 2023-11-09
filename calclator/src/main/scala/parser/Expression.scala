@@ -1,6 +1,6 @@
 package parser
 
-object Eval {
+object Expression {
   import Token._
   import Primitive._
   import Combinator._

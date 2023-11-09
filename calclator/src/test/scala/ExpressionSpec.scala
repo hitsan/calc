@@ -1,9 +1,7 @@
-class EvalSpec extends munit.FunSuite {
-  import parser.Eval._
+class ExpressionSpec extends munit.FunSuite {
+  import parser.Expression._
   import parser.PResult
   import parser.Token._
-  import parser.Primitive._
-  import parser.Combinator._
 
   test("primary") {
     assertEquals(primary("123"), Some(PResult(IntNum(123), "")))
