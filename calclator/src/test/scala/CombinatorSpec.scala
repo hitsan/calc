@@ -1,7 +1,7 @@
-class ParserGeneraterSpec extends munit.FunSuite {
+class CombinatorSpec extends munit.FunSuite {
   import parser._
-  import parser.Parser._
-  import parser.ParserGenerater._
+  import parser.Primitive._
+  import parser.Combinator._
   import parser.Token._
 
   test("repeat") {

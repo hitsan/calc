@@ -1,9 +1,9 @@
 package parser
 
-object Parser {
+object Primitive {
   import Token._
   import PResult._
-  import ParserGenerater._
+  import Combinator._
 
   def anyChar: Parser[Token] = code =>
     for {

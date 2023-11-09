@@ -2,8 +2,8 @@ package parser
 
 object Eval {
   import Token._
-  import Parser._
-  import ParserGenerater._
+  import Primitive._
+  import Combinator._
 
   // Parser Expression
   def term: Parser[Node] =

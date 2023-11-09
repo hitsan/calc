@@ -1,6 +1,6 @@
 package parser
 
-object ParserGenerater {
+object Combinator {
   import Token._
 
   def skipSpace[A](parser: Parser[A]): Parser[A] =

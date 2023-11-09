@@ -1,6 +1,6 @@
-class ParserSpec extends munit.FunSuite {
+class PrimitiveSpec extends munit.FunSuite {
   import parser._
-  import parser.Parser._
+  import parser.Primitive._
   import parser.Token._
 
   test("Digit") {
