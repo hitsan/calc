@@ -6,15 +6,15 @@ object ParserGenerater {
   def skipSpace[T](parser: Parser[T]): Parser[T] =
     code => parser(code.trim)
 
-  def repeat[T](parser: Parser[T]): Parser[List[T]] = code =>
+  def rep[T](parser: Parser[T]): Parser[List[T]] = code =>
     for {
       PResult(token, rest) <- parser(code)
-      PResult(tokens, ret) <- repeat(parser)(rest)
+      PResult(tokens, ret) <- rep(parser)(rest)
         .orElse(Option(PResult(List[T](), rest)))
     } yield PResult(token +: tokens, ret)
 
-  def repeat0[T](parser: Parser[T]): Parser[List[T]] =
-    code => repeat(parser)(code).orElse(Option(PResult(List[T](), code)))
+  def rep0[T](parser: Parser[T]): Parser[List[T]] =
+    code => rep(parser)(code).orElse(Option(PResult(List[T](), code)))
 
   def and[A, B](parsers: OrParser[A, B]*): Parser[List[A | B]] = code =>
     val initial = Option(PResult(List[A | B](), code))
@@ -30,8 +30,8 @@ object ParserGenerater {
 
   def makeAst[A <: List[_]](tokens: A): Node = {
     val initial = tokens.head match {
-      case head: Node    => head
       case head: List[_] => makeAst(head)
+      case head: Node    => head
     }
     (initial /: tokens.tail) { (ast, token) =>
       (ast, token) match {

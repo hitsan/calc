@@ -5,7 +5,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
   import parser.Token._
 
   test("repeat") {
-    val number = repeat(digit)
+    val number = rep(digit)
     assertEquals(
       number("123"),
       Some(PResult(List(IntNum(1), IntNum(2), IntNum(3)), ""))
@@ -18,7 +18,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
   }
 
   test("repeat Zero or More") {
-    val number = repeat0(digit)
+    val number = rep0(digit)
     assertEquals(
       number("123"),
       Some(PResult(List(IntNum(1), IntNum(2), IntNum(3)), ""))
@@ -118,7 +118,7 @@ class ParserGeneraterSpec extends munit.FunSuite {
     )
     assertEquals(parser1("1*2"), None)
 
-    val p2 = and(intNum, repeat0(and(operater('+'), intNum)))
+    val p2 = and(intNum, rep0(and(operater('+'), intNum)))
     val parser2 = applyExpr(p2)(makeAst)
     assertEquals(
       parser2("1+2+3"),
