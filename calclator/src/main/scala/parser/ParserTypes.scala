@@ -1,12 +1,19 @@
 package parser
 import Token._
 
+type Operater = '+' | '-' | '*' | '/'
+
 case class PResult[T](
     token: T,
     rest: String
 )
-type Parser[T] = String => Option[PResult[T]]
-type Operater = '+' | '-' | '*' | '/'
+type Parser[A] = String => Option[PResult[A]]
+
+type OrParser[A, B] = Parser[A] | Parser[B]
+// type OrList[A, B, C] = A match
+//   case Parser[_] => Parser[List[B | C]]
+//   case PResult[_] => PResult[List[B | C]]
+
 enum Token:
   case Add(lhs: Token, rhs: Token)
   case Sub(lhs: Token, rhs: Token)
@@ -15,20 +22,11 @@ enum Token:
   case IntNum(n: Int)
   case Str(str: String)
   case Achar(char: Char)
-
-def add: TwoHand = rhs => lhs => Add(rhs, lhs)
-def sub: TwoHand = rhs => lhs => Sub(rhs, lhs)
-def mul: TwoHand = rhs => lhs => Mul(rhs, lhs)
-def div: TwoHand = rhs => lhs => Div(rhs, lhs)
-
 type OneHand = Token => Token
 type TwoHand = Token => Token => Token
-type TypeTpe[A] = A match
-  case Token => Token | OneHand | TwoHand
-  case _    => A | A => A | A => A => A
+type Node = Token | OneHand | TwoHand
 
-type Node = TypeTpe[Token]
-
-type Rec[A] = A match
-  case Token => Token | List[Rec[Token]]
-  case _    => A | List[Rec[A]]
+def add: TwoHand = lhs => rhs => Add(lhs, rhs)
+def sub: TwoHand = lhs => rhs => Sub(lhs, rhs)
+def mul: TwoHand = lhs => rhs => Mul(lhs, rhs)
+def div: TwoHand = lhs => rhs => Div(lhs, rhs)
