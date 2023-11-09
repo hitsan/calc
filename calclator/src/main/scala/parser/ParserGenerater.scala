@@ -3,18 +3,18 @@ package parser
 object ParserGenerater {
   import Token._
 
-  def skipSpace[T](parser: Parser[T]): Parser[T] =
+  def skipSpace[A](parser: Parser[A]): Parser[A] =
     code => parser(code.trim)
 
-  def rep[T](parser: Parser[T]): Parser[List[T]] = code =>
+  def rep[A](parser: Parser[A]): Parser[List[A]] = code =>
     for {
       PResult(token, rest) <- parser(code)
       PResult(tokens, ret) <- rep(parser)(rest)
-        .orElse(Option(PResult(List[T](), rest)))
+        .orElse(Option(PResult(List[A](), rest)))
     } yield PResult(token +: tokens, ret)
 
-  def rep0[T](parser: Parser[T]): Parser[List[T]] =
-    code => rep(parser)(code).orElse(Option(PResult(List[T](), code)))
+  def rep0[A](parser: Parser[A]): Parser[List[A]] =
+    code => rep(parser)(code).orElse(Option(PResult(List[A](), code)))
 
   def and[A, B](parsers: OrParser[A, B]*): Parser[List[A | B]] = code =>
     val initial = Option(PResult(List[A | B](), code))
