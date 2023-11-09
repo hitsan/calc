@@ -8,14 +8,12 @@ object Expression {
   // Parser Expression
   def expression: Parser[Node] = ???
   def term: Parser[Node] =
-    applyExpr(and(factor, rep0(and(or(operater('+'), operater('-')), factor))))(
-      makeAst
-    )
+    and(factor, rep0(and(or(operater('+'), operater('-')), factor)))
+      .applyExpr(makeAst)
 
   def factor: Parser[Node] =
-    applyExpr(and(unary, rep0(and(or(operater('*'), operater('/')), unary))))(
-      makeAst
-    )
+    and(unary, rep0(and(or(operater('*'), operater('/')), unary)))
+      .applyExpr(makeAst)
 
   def unary: Parser[Token] = primary
   def primary: Parser[Token] = or(intNum, anyString)

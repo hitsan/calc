@@ -43,8 +43,9 @@ object Combinator {
     }
   }
 
-  def applyExpr[A](parser: Parser[A])(f: A => Node): Parser[Node] = code =>
-    for {
-      PResult(tokens, rest) <- parser(code)
-    } yield PResult(f(tokens), rest)
+  extension[A] (parser: Parser[A])
+    def applyExpr(f: A => Node): Parser[Node] = code =>
+      for {
+        PResult(tokens, rest) <- parser(code)
+      } yield PResult(f(tokens), rest)
 }

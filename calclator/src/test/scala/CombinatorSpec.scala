@@ -87,8 +87,7 @@ class CombinatorSpec extends munit.FunSuite {
   }
 
   test("applyExpr") {
-    val p = and(intNum, operater('+'), intNum)
-    val parser = applyExpr(p)(makeAst)
+    val parser = and(intNum, operater('+'), intNum).applyExpr(makeAst)
 
     assertEquals(
       parser("1+2"),
@@ -118,8 +117,7 @@ class CombinatorSpec extends munit.FunSuite {
     )
     assertEquals(parser1("1*2"), None)
 
-    val p2 = and(intNum, rep0(and(operater('+'), intNum)))
-    val parser2 = applyExpr(p2)(makeAst)
+    val parser2 = and(intNum, rep0(and(operater('+'), intNum))).applyExpr(makeAst)
     assertEquals(
       parser2("1+2+3"),
       Some(PResult(Add(Add(IntNum(1), IntNum(2)), IntNum(3)), ""))
