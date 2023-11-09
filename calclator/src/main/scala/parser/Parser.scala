@@ -21,7 +21,7 @@ object Parser {
   }
   def anyString: Parser[Token] = code =>
     for {
-      PResult(tokens, rest) <- repeat(anyChar)(code)
+      PResult(tokens, rest) <- rep(anyChar)(code)
     } yield {
       val str = (Str("") /: tokens) { joinChar(_, _) }
       PResult(str, rest)
@@ -33,7 +33,7 @@ object Parser {
   }
   def intNum: Parser[Token] = code =>
     for {
-      PResult(tokens, rest) <- repeat(digit)(code)
+      PResult(tokens, rest) <- rep(digit)(code)
     } yield {
       val number = (IntNum(0) /: tokens) { joinNum(_, _) }
       PResult(number, rest)
