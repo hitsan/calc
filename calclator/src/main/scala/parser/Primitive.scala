@@ -27,15 +27,15 @@ object Primitive {
       PResult(str, rest)
     }
 
-  def joinNum(num1: Node, num2: Node): Node = (num1, num2) match {
-    case (IntNum(n1), IntNum(n2)) => IntNum(10 * n1 + n2)
-    case _                        => IntNum(0)
-  }
   def intNum: Parser[Node] = code =>
     for {
       PResult(tokens, rest) <- rep(digit)(code)
     } yield {
-      val number = (IntNum(0) /: tokens) { joinNum(_, _) }
+      val number = (IntNum(0) /: tokens) { (acc, num) =>
+        (acc, num) match {
+          case (IntNum(n1), IntNum(n2)) => IntNum(10 * n1 + n2)
+        }
+      }
       PResult(number, rest)
     }
 

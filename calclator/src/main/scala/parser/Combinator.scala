@@ -42,6 +42,7 @@ object Combinator {
       }
     } match {
       case n: Node => n
+      case _       => IntNum(1)
     }
   }
 
