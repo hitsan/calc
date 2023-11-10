@@ -15,15 +15,14 @@ object Primitive {
       head <- code.headOption if head.isDigit
     } yield PResult(IntNum(head.asDigit), code.tail)
 
-  def joinChar(str: Node, char: Node): Str = (str, char) match {
-    case (Str(str), Achar(char)) => Str(str + char)
-    case _                       => Str("")
-  }
   def anyString: Parser[Node] = code =>
     for {
       PResult(tokens, rest) <- rep(anyChar)(code)
     } yield {
-      val str = (Str("") /: tokens) { joinChar(_, _) }
+      val str = (Str("") /: tokens) { (str, char) =>
+        (str, char) match
+          case (Str(str), Achar(char)) => Str(str + char)
+      }
       PResult(str, rest)
     }
 
@@ -32,9 +31,8 @@ object Primitive {
       PResult(tokens, rest) <- rep(digit)(code)
     } yield {
       val number = (IntNum(0) /: tokens) { (acc, num) =>
-        (acc, num) match {
+        (acc, num) match
           case (IntNum(n1), IntNum(n2)) => IntNum(10 * n1 + n2)
-        }
       }
       PResult(number, rest)
     }
