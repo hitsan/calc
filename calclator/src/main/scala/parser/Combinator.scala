@@ -1,7 +1,7 @@
 package parser
 
 object Combinator {
-  import Token._
+  import Node._
 
   def skipSpace[A](parser: Parser[A]): Parser[A] =
     code => parser(code.trim)
@@ -28,23 +28,25 @@ object Combinator {
   def or[A](parsers: Parser[A]*): Parser[A] = code =>
     parsers.flatMap(parser => parser(code)).headOption
 
-  def makeAst[A <: List[_]](tokens: A): Node = {
+  def exprRule[A <: List[_]](tokens: A): Node = {
     val initial = tokens.head match {
-      case head: List[_] => makeAst(head)
-      case head: Node    => head
+      case head: List[_] => exprRule(head)
+      case head: Ast     => head
     }
     (initial /: tokens.tail) { (ast, token) =>
       (ast, token) match {
-        case (n: Node, l: List[_])     => makeAst(n +: l)
-        case (rhs: Token, op: TwoHand) => op(rhs)
-        case (op: OneHand, lhs: Token) => op(lhs)
-        case (_, _)                    => ast
+        case (n: Node, l: List[_])    => exprRule(n +: l)
+        case (rhs: Node, op: TwoHand) => op(rhs)
+        case (op: OneHand, lhs: Node) => op(lhs)
+        case (_, _)                   => ast
       }
+    } match {
+      case n: Node => n
     }
   }
 
-  extension[A] (parser: Parser[A])
-    def applyExpr(f: A => Node): Parser[Node] = code =>
+  extension [A](parser: Parser[A])
+    def struct(f: A => Node): Parser[Node] = code =>
       for {
         PResult(tokens, rest) <- parser(code)
       } yield PResult(f(tokens), rest)

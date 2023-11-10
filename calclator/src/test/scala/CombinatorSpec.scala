@@ -2,7 +2,7 @@ class CombinatorSpec extends munit.FunSuite {
   import parser.PResult
   import parser.Primitive._
   import parser.Combinator._
-  import parser.Token._
+  import parser.Node._
 
   test("repeat") {
     val number = rep(digit)
@@ -86,8 +86,8 @@ class CombinatorSpec extends munit.FunSuite {
     assertEquals(str("ab+2"), None)
   }
 
-  test("applyExpr") {
-    val parser = and(intNum, operater('+'), intNum).applyExpr(makeAst)
+  test("structAst") {
+    val parser = and(intNum, operater('+'), intNum).struct(exprRule)
 
     assertEquals(
       parser("1+2"),
@@ -105,8 +105,8 @@ class CombinatorSpec extends munit.FunSuite {
     assertEquals(parser("11-2"), None)
     assertEquals(parser(""), None)
 
-    val p1 = and(intNum, or(operater('-'), operater('+')), intNum)
-    val parser1 = applyExpr(p1)(makeAst)
+    val parser1 =
+      and(intNum, or(operater('-'), operater('+')), intNum).struct(exprRule)
     assertEquals(
       parser1("1+2"),
       Some(PResult(Add(IntNum(1), IntNum(2)), ""))
@@ -117,7 +117,7 @@ class CombinatorSpec extends munit.FunSuite {
     )
     assertEquals(parser1("1*2"), None)
 
-    val parser2 = and(intNum, rep0(and(operater('+'), intNum))).applyExpr(makeAst)
+    val parser2 = and(intNum, rep0(and(operater('+'), intNum))).struct(exprRule)
     assertEquals(
       parser2("1+2+3"),
       Some(PResult(Add(Add(IntNum(1), IntNum(2)), IntNum(3)), ""))

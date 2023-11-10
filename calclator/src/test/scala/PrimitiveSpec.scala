@@ -1,7 +1,7 @@
 class PrimitiveSpec extends munit.FunSuite {
   import parser.PResult
   import parser.Primitive._
-  import parser.Token._
+  import parser.Node._
 
   test("Digit") {
     assertEquals(digit("1+1"), Some(PResult(IntNum(1), "+1")))

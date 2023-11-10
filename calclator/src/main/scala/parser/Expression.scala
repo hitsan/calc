@@ -1,7 +1,7 @@
 package parser
 
 object Expression {
-  import Token._
+  import Node._
   import Primitive._
   import Combinator._
 
@@ -9,12 +9,12 @@ object Expression {
   def expression: Parser[Node] = ???
   def term: Parser[Node] =
     and(factor, rep0(and(or(operater('+'), operater('-')), factor)))
-      .applyExpr(makeAst)
+      .struct(exprRule)
 
   def factor: Parser[Node] =
     and(unary, rep0(and(or(operater('*'), operater('/')), unary)))
-      .applyExpr(makeAst)
+      .struct(exprRule)
 
-  def unary: Parser[Token] = primary
-  def primary: Parser[Token] = or(intNum, anyString)
+  def unary: Parser[Node] = primary
+  def primary: Parser[Node] = or(intNum, anyString)
 }

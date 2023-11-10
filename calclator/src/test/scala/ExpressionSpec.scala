@@ -1,7 +1,7 @@
 class ExpressionSpec extends munit.FunSuite {
   import parser.Expression._
   import parser.PResult
-  import parser.Token._
+  import parser.Node._
 
   test("primary") {
     assertEquals(primary("123"), Some(PResult(IntNum(123), "")))
