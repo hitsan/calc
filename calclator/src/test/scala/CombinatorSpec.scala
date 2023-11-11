@@ -87,7 +87,7 @@ class CombinatorSpec extends munit.FunSuite {
   }
 
   test("structAst") {
-    val parser = and(intNum, operater('+'), intNum).struct(exprRule)
+    val parser = and(intNum, operater('+'), intNum).struct(astRule)
 
     assertEquals(
       parser("1+2"),
@@ -106,7 +106,7 @@ class CombinatorSpec extends munit.FunSuite {
     assertEquals(parser(""), None)
 
     val parser1 =
-      and(intNum, or(operater('-'), operater('+')), intNum).struct(exprRule)
+      and(intNum, or(operater('-'), operater('+')), intNum).struct(astRule)
     assertEquals(
       parser1("1+2"),
       Some(PResult(Add(IntNum(1), IntNum(2)), ""))
@@ -117,7 +117,7 @@ class CombinatorSpec extends munit.FunSuite {
     )
     assertEquals(parser1("1*2"), None)
 
-    val parser2 = and(intNum, rep0(and(operater('+'), intNum))).struct(exprRule)
+    val parser2 = and(intNum, rep0(and(operater('+'), intNum))).struct(astRule)
     assertEquals(
       parser2("1+2+3"),
       Some(PResult(Add(Add(IntNum(1), IntNum(2)), IntNum(3)), ""))

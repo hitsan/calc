@@ -53,8 +53,13 @@ object Primitive {
     case Achar('/') => div
     case _          => null
   }
+
   def operater(op: Operater): Parser[TwoHand] = code =>
     for {
       PResult(token, rest) <- char(op)(code)
     } yield PResult(charToOp(token), rest)
+  def plus = operater('+')
+  def minus = operater('-')
+  def times = operater('*')
+  def divide = operater('/')
 }

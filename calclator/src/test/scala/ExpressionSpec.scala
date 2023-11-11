@@ -4,7 +4,7 @@ class ExpressionSpec extends munit.FunSuite {
   import parser.Node._
 
   test("primary") {
-    assertEquals(primary("123"), Some(PResult(IntNum(123), "")))
+    assertEquals(expression("123"), Some(PResult(IntNum(123), "")))
     assertEquals(primary("12+3"), Some(PResult(IntNum(12), "+3")))
     assertEquals(primary("123abc"), Some(PResult(IntNum(123), "abc")))
     assertEquals(primary("abc"), Some(PResult(Str("abc"), "")))
