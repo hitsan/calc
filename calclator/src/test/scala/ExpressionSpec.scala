@@ -5,7 +5,7 @@ class ExpressionSpec extends munit.FunSuite {
 
   test("primary") {
     assertEquals(expression("123"), Some(PResult(IntNum(123), "")))
-    assertEquals(primary("12+3"), Some(PResult(IntNum(12), "+3")))
+    assertEquals(primary("12 + 3"), Some(PResult(IntNum(12), " + 3")))
     assertEquals(primary("123abc"), Some(PResult(IntNum(123), "abc")))
     assertEquals(primary("abc"), Some(PResult(Str("abc"), "")))
     assertEquals(primary("abc123"), Some(PResult(Str("abc"), "123")))
@@ -15,8 +15,8 @@ class ExpressionSpec extends munit.FunSuite {
 
   test("factor") {
     assertEquals(factor("123"), Some(PResult(IntNum(123), "")))
-    assertEquals(factor("1*2"), Some(PResult(Mul(IntNum(1), IntNum(2)), "")))
-    assertEquals(factor("1/2"), Some(PResult(Div(IntNum(1), IntNum(2)), "")))
+    assertEquals(factor("1 * 2"), Some(PResult(Mul(IntNum(1), IntNum(2)), "")))
+    assertEquals(factor("1 / 2"), Some(PResult(Div(IntNum(1), IntNum(2)), "")))
     assertEquals(
       factor("1*2*3"),
       Some(PResult(Mul(Mul(IntNum(1), IntNum(2)), IntNum(3)), ""))
@@ -87,7 +87,7 @@ class ExpressionSpec extends munit.FunSuite {
       Some(PResult(Add(Sub(IntNum(1), IntNum(2)), IntNum(3)), ""))
     )
     assertEquals(
-      expression("1+2-3+4"),
+      expression("1 + 2 - 3 + 4"),
       Some(
         PResult(Add(Sub(Add(IntNum(1), IntNum(2)), IntNum(3)), IntNum(4)), "")
       )

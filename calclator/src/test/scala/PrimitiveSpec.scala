@@ -5,13 +5,14 @@ class PrimitiveSpec extends munit.FunSuite {
 
   test("Char") {
     val p = char('a')
-    assertEquals(p("a"), Some(PResult(Achar('a'), ""))) 
+    assertEquals(p("  a"), Some(PResult(Achar('a'), ""))) 
     assertEquals(p("aa"), Some(PResult(Achar('a'), "a"))) 
     assertEquals(p("1+1"), None)
     assertEquals(p(""), None)
   }
 
   test("Digit") {
+    assertEquals(digit("  1+1"), Some(PResult(IntNum(1), "+1")))
     assertEquals(digit("1+1"), Some(PResult(IntNum(1), "+1")))
     assertEquals(digit(""), None)
     assertEquals(digit("a"), None)
@@ -19,6 +20,8 @@ class PrimitiveSpec extends munit.FunSuite {
 
   test("Number") {
     assertEquals(intNum("12+3"), Some(PResult(IntNum(12), "+3")))
+    assertEquals(intNum("  12+3"), Some(PResult(IntNum(12), "+3")))
+    assertEquals(intNum("1 2+3"), Some(PResult(IntNum(1), " 2+3")))
     assertEquals(intNum("+123"), None)
     assertEquals(intNum(""), None)
   }
@@ -34,6 +37,8 @@ class PrimitiveSpec extends munit.FunSuite {
     val parser = string("if")
     assertEquals(parser("if"), Some(PResult(Str("if"), "")))
     assertEquals(parser("ifelse"), Some(PResult(Str("if"), "else")))
+    assertEquals(parser("  ifelse"), Some(PResult(Str("if"), "else")))
+    assertEquals(parser("if else"), Some(PResult(Str("if"), " else")))
     assertEquals(parser("11+2"), None)
     assertEquals(parser(""), None)
   }

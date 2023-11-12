@@ -3,9 +3,6 @@ package parser
 object Combinator {
   import Node._
 
-  def skipSpace[A](parser: Parser[A]): Parser[A] =
-    code => parser(code.trim)
-
   def rep[A](parser: Parser[A]): Parser[List[A]] = code =>
     for {
       PResult(token, rest) <- parser(code)

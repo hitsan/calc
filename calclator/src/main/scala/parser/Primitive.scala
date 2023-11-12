@@ -5,19 +5,20 @@ object Primitive {
   import PResult._
   import Combinator._
 
-  def anyChar: Parser[Node] = code =>
+  // Don't allow space
+  def anyCharS: Parser[Node] = code =>
     for {
       head <- code.headOption if head.isLetter
     } yield PResult(Achar(head), code.tail)
 
-  def digit: Parser[Node] = code =>
+  def digitS: Parser[Node] = code =>
     for {
       head <- code.headOption if head.isDigit
     } yield PResult(IntNum(head.asDigit), code.tail)
 
-  def anyString: Parser[Node] = code =>
+  def anyStringS: Parser[Node] = code =>
     for {
-      PResult(tokens, rest) <- rep(anyChar)(code)
+      PResult(tokens, rest) <- rep(anyCharS)(code)
     } yield {
       val str = (Str("") /: tokens) { (str, char) =>
         (str, char) match
@@ -26,9 +27,9 @@ object Primitive {
       PResult(str, rest)
     }
 
-  def intNum: Parser[Node] = code =>
+  def intNumS: Parser[Node] = code =>
     for {
-      PResult(tokens, rest) <- rep(digit)(code)
+      PResult(tokens, rest) <- rep(digitS)(code)
     } yield {
       val number = (IntNum(0) /: tokens) { (acc, num) =>
         (acc, num) match
@@ -37,12 +38,12 @@ object Primitive {
       PResult(number, rest)
     }
 
-  def char(character: Char): Parser[Node] = code =>
+  def charS(character: Char): Parser[Node] = code =>
     for {
       head <- code.headOption if (head == character)
     } yield PResult(Achar(head), code.tail)
 
-  def string(word: String): Parser[Node] = code =>
+  def stringS(word: String): Parser[Node] = code =>
     if (code.startsWith(word)) Some(PResult(Str(word), code.drop(word.length)))
     else None
 
@@ -56,10 +57,21 @@ object Primitive {
 
   def operater(op: Operater): Parser[TwoHand] = code =>
     for {
-      PResult(token, rest) <- char(op)(code)
+      PResult(token, rest) <- charS(op)(code)
     } yield PResult(charToOp(token), rest)
-  def plus = operater('+')
-  def minus = operater('-')
-  def times = operater('*')
-  def divide = operater('/')
+
+  def skipSpace[A](parser: Parser[A]): Parser[A] =
+    code => parser(code.trim)
+
+  // Blow functions can skip space
+  def anyChar = skipSpace(anyCharS)
+  def digit = skipSpace(digitS)
+  def anyString = skipSpace(anyStringS)
+  def intNum = skipSpace(intNumS)
+  def char(character: Char) = skipSpace(charS(character))
+  def string(word: String) = skipSpace(stringS(word))
+  def plus = skipSpace(operater('+'))
+  def minus = skipSpace(operater('-'))
+  def times = skipSpace(operater('*'))
+  def divide = skipSpace(operater('/'))
 }
