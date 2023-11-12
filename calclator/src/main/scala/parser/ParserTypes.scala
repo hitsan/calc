@@ -1,5 +1,5 @@
 package parser
-import Token._
+import Node._
 
 type Operater = '+' | '-' | '*' | '/'
 
@@ -14,17 +14,17 @@ type OrParser[A, B] = Parser[A] | Parser[B]
 //   case Parser[_] => Parser[List[B | C]]
 //   case PResult[_] => PResult[List[B | C]]
 
-enum Token:
-  case Add(lhs: Token, rhs: Token)
-  case Sub(lhs: Token, rhs: Token)
-  case Mul(lhs: Token, rhs: Token)
-  case Div(lhs: Token, rhs: Token)
+enum Node:
+  case Add(lhs: Node, rhs: Node)
+  case Sub(lhs: Node, rhs: Node)
+  case Mul(lhs: Node, rhs: Node)
+  case Div(lhs: Node, rhs: Node)
   case IntNum(n: Int)
   case Str(str: String)
   case Achar(char: Char)
-type OneHand = Token => Token
-type TwoHand = Token => Token => Token
-type Node = Token | OneHand | TwoHand
+type OneHand = Node => Node
+type TwoHand = Node => Node => Node
+type Ast = Node | OneHand | TwoHand
 
 def add: TwoHand = lhs => rhs => Add(lhs, rhs)
 def sub: TwoHand = lhs => rhs => Sub(lhs, rhs)

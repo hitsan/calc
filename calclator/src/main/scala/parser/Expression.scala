@@ -1,21 +1,22 @@
 package parser
 
 object Expression {
-  import Token._
+  import Node._
   import Primitive._
   import Combinator._
 
   // Parser Expression
-  def term: Parser[Node] =
-    applyExpr(and(factor, rep0(and(or(operater('+'), operater('-')), factor))))(
-      makeAst
-    )
+  def expression: Parser[Node] = code => term(code)
+  def term: Parser[Node] = code =>
+    (factor & ((plus | minus) & factor).*).struct(astRule)(code)
 
-  def factor: Parser[Node] =
-    applyExpr(and(unary, rep0(and(or(operater('*'), operater('/')), unary))))(
-      makeAst
-    )
+  def factor: Parser[Node] = code =>
+    (unary & ((times | divide) & unary).*).struct(astRule)(code)
 
-  def unary: Parser[Token] = primary
-  def primary: Parser[Token] = or(intNum, anyString)
+  def unary: Parser[Node] = code => primary(code)
+  def primary: Parser[Node] = code =>
+    or(intNum | anyString | parenthesesExpr)(code)
+
+  def parenthesesExpr: Parser[Node] = code =>
+    and(char('('), expression, char(')')).struct(exprRule)(code)
 }
