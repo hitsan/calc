@@ -27,5 +27,10 @@ class EvalSpec extends munit.FunSuite {
   test("exprssion") {
     assertEquals(expression("1+2/2*5").eval, 1 + 2 / 2 * 5)
     assertEquals(expression("22 / 5+ 5*6+3").eval, 22 / 5 + 5 * 6 + 3)
+    assertEquals(expression("22 - (5+ 5)*6+3").eval, 22 - (5 + 5) * 6 + 3)
+    assertEquals(
+      expression("22 * (5 + (4 + 5)*6)+3").eval,
+      22 * (5 + (4 + 5) * 6) + 3
+    )
   }
 }
