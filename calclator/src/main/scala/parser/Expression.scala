@@ -6,17 +6,17 @@ object Expression {
   import Combinator._
 
   // Parser Expression
-  def expression: Parser[Node] = term
-  def term: Parser[Node] =
-    (factor & ((plus | minus) & factor).*).struct(astRule)
+  def expression: Parser[Node] = code => term(code)
+  def term: Parser[Node] = code =>
+    (factor & ((plus | minus) & factor).*).struct(astRule)(code)
 
-  def factor: Parser[Node] =
-    (unary & ((times | divide) & unary).*).struct(astRule)
+  def factor: Parser[Node] = code =>
+    (unary & ((times | divide) & unary).*).struct(astRule)(code)
 
-  def unary: Parser[Node] = primary
-  def primary: Parser[Node] = {
-    or(intNum, anyString, dE)
-  }
+  def unary: Parser[Node] = code => primary(code)
+  def primary: Parser[Node] = code =>
+    or(intNum | anyString | parenthesesExpr)(code)
 
-  def dE: Parser[Node] = and(char('('), expression, char(')')).struct(exprRule)
+  def parenthesesExpr: Parser[Node] = code =>
+    and(char('('), expression, char(')')).struct(exprRule)(code)
 }

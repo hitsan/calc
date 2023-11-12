@@ -3,6 +3,14 @@ class PrimitiveSpec extends munit.FunSuite {
   import parser.Primitive._
   import parser.Node._
 
+  test("Char") {
+    val p = char('a')
+    assertEquals(p("a"), Some(PResult(Achar('a'), ""))) 
+    assertEquals(p("aa"), Some(PResult(Achar('a'), "a"))) 
+    assertEquals(p("1+1"), None)
+    assertEquals(p(""), None)
+  }
+
   test("Digit") {
     assertEquals(digit("1+1"), Some(PResult(IntNum(1), "+1")))
     assertEquals(digit(""), None)

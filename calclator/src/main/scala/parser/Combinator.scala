@@ -56,7 +56,7 @@ object Combinator {
 
   def exprRule[A <: List[_]](tokens: A): Node =
     (tokens.head, tokens(1), tokens.last) match {
-      case (Achar('('), n:Node, Achar(')')) => println("ddddddddd");n
+      case (Achar('('), n:Node, Achar(')')) => n
     }
 
   extension [A](parser: Parser[A])
