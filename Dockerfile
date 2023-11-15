@@ -17,7 +17,7 @@ RUN apt-get -y update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-COPY endpoint.sh /usr/bin/endpoint.sh
-RUN chmod +x /usr/bin/endpoint.sh
-ENTRYPOINT [ "/usr/bin/endpoint.sh" ]
-CMD ["/bin/bash"]
+# COPY endpoint.sh /usr/bin/endpoint.sh
+# RUN chmod +x /usr/bin/endpoint.sh
+# ENTRYPOINT [ "/usr/bin/endpoint.sh" ]
+# CMD ["/bin/bash"]
