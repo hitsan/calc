@@ -4,6 +4,7 @@ RUN apt-get -y update \
  && apt-get -y --no-install-recommends install \
     curl \
     gnupg \
+    gosu \
     openjdk-11-jdk \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
@@ -16,9 +17,7 @@ RUN apt-get -y update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-# Download sbt dependance
-RUN cd calcrator && sbt update
-
-# Download metals
-RUN curl -Lo /usr/local/bin/coursier https://git.io/coursier-cli && chmod +x /usr/local/bin/coursier
-RUN coursier bootstrap org.scalameta:metals_2.12:latest.stable -o /usr/local/bin/metals
+COPY endpoint.sh /usr/bin/endpoint.sh
+RUN chmod +x /usr/bin/endpoint.sh
+ENTRYPOINT [ "/usr/bin/endpoint.sh" ]
+CMD ["/bin/bash"]
