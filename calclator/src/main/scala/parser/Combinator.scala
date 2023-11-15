@@ -57,7 +57,7 @@ object Combinator {
       }
     } match {
       case n: Node => n
-      case _       => IntNum(1)
+      case _       =>  sys.error("Invalid token")
     }
   }
 
