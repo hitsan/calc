@@ -15,3 +15,10 @@ RUN apt-get -y update \
     sbt \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
+
+# Download sbt dependance
+RUN cd calcrator && sbt update
+
+# Download metals
+RUN curl -Lo /usr/local/bin/coursier https://git.io/coursier-cli && chmod +x /usr/local/bin/coursier
+RUN coursier bootstrap org.scalameta:metals_2.12:latest.stable -o /usr/local/bin/metals
