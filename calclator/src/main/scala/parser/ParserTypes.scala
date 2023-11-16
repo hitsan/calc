@@ -19,6 +19,7 @@ enum Node:
   case Sub(lhs: Node, rhs: Node)
   case Mul(lhs: Node, rhs: Node)
   case Div(lhs: Node, rhs: Node)
+  case Bang(rhs: Node)
   case IntNum(n: Int)
   case Str(str: String)
   case Achar(char: Char)
