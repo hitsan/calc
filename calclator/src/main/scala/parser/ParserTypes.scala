@@ -22,6 +22,7 @@ enum Node:
   case IntNum(n: Int)
   case Str(str: String)
   case Achar(char: Char)
+  case Bool(value: Boolean)
 type OneHand = Node => Node
 type TwoHand = Node => Node => Node
 type Ast = Node | OneHand | TwoHand
