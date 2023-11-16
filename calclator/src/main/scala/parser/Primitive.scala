@@ -47,18 +47,19 @@ object Primitive {
     if (code.startsWith(word)) Some(PResult(Str(word), code.drop(word.length)))
     else None
 
-  def charToOp(node: Node): TwoHand = node match {
-    case Achar('+') => add
-    case Achar('-') => sub
-    case Achar('*') => mul
-    case Achar('/') => div
-    case _          => null
+  def charToOp(node: Node): Option[TwoHand] = node match {
+    case Achar('+') => Some(add)
+    case Achar('-') => Some(sub)
+    case Achar('*') => Some(mul)
+    case Achar('/') => Some(div)
+    case _          => None
   }
 
   def operater(op: Operater): Parser[TwoHand] = code =>
     for {
       PResult(token, rest) <- charS(op)(code)
-    } yield PResult(charToOp(token), rest)
+      operation <- charToOp(token)
+    } yield PResult(operation, rest)
 
   def skipSpace[A](parser: Parser[A]): Parser[A] =
     code => parser(code.trim)

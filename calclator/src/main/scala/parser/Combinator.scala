@@ -1,17 +1,27 @@
 package parser
 
 object Combinator {
+  import scala.collection.mutable.ListBuffer
   import Node._
 
-  def rep[A](parser: Parser[A]): Parser[List[A]] = code =>
-    for {
-      PResult(token, rest) <- parser(code)
-      PResult(tokens, ret) <- rep(parser)(rest)
-        .orElse(Option(PResult(List[A](), rest)))
-    } yield PResult(token +: tokens, ret)
+  def repBase[A](parser: Parser[A], allowEmpty: Boolean): Parser[List[A]] = {
+    def loop(
+        code: String,
+        acc: ListBuffer[A] = ListBuffer()
+    ): Option[PResult[List[A]]] = {
+      parser(code) match {
+        case Some(PResult(token, rest))         => loop(rest, acc += token)
+        case None if acc.isEmpty && !allowEmpty => None
+        case None => Some(PResult(acc.toList, code))
+      }
+    }
+    loop(_)
+  }
 
+  def rep[A](parser: Parser[A]): Parser[List[A]] =
+    repBase(parser, allowEmpty = false)
   def rep0[A](parser: Parser[A]): Parser[List[A]] =
-    code => rep(parser)(code).orElse(Option(PResult(List[A](), code)))
+    repBase(parser, allowEmpty = true)
 
   extension [A](parser: Parser[A]) def * = rep0(parser)
 
@@ -47,13 +57,13 @@ object Combinator {
       }
     } match {
       case n: Node => n
-      case _       => IntNum(1)
+      case _       =>  sys.error("Invalid token")
     }
   }
 
   def exprRule[A <: List[_]](tokens: A): Node =
     (tokens.head, tokens(1), tokens.last) match {
-      case (Achar('('), n:Node, Achar(')')) => n
+      case (Achar('('), n: Node, Achar(')')) => n
     }
 
   extension [A](parser: Parser[A])
