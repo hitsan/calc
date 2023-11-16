@@ -61,6 +61,14 @@ object Primitive {
       operation <- charToOp(token)
     } yield PResult(operation, rest)
 
+  def boolS: Parser[Node] = code =>
+    (parseBool("true") | parseBool("false"))(code)
+
+  def parseBool(bool: "true" | "false"): Parser[Node] = code =>
+    for {
+      PResult(value, rest) <- stringS(bool)(code)
+    } yield PResult(Bool(bool.toBoolean), rest)
+
   def skipSpace[A](parser: Parser[A]): Parser[A] =
     code => parser(code.trim)
 
@@ -75,4 +83,5 @@ object Primitive {
   def minus = skipSpace(operater('-'))
   def times = skipSpace(operater('*'))
   def divide = skipSpace(operater('/'))
+  def bool = skipSpace(boolS)
 }
