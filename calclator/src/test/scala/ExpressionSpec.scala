@@ -76,8 +76,14 @@ class ExpressionSpec extends munit.FunSuite {
 
   test("expression") {
     assertEquals(expression("123"), Some(PResult(IntNum(123), "")))
-    assertEquals(expression("1+2"), Some(PResult(Add(IntNum(1), IntNum(2)), "")))
-    assertEquals(expression("1-2"), Some(PResult(Sub(IntNum(1), IntNum(2)), "")))
+    assertEquals(
+      expression("1+2"),
+      Some(PResult(Add(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1-2"),
+      Some(PResult(Sub(IntNum(1), IntNum(2)), ""))
+    )
     assertEquals(
       expression("1+2-3"),
       Some(PResult(Sub(Add(IntNum(1), IntNum(2)), IntNum(3)), ""))
@@ -109,21 +115,26 @@ class ExpressionSpec extends munit.FunSuite {
         PResult(Sub(Mul(IntNum(1), IntNum(2)), Div(IntNum(3), IntNum(4))), "")
       )
     )
-  assertEquals(
-    expression("(1+2)*3"),
-    Some(PResult(Mul(Add(IntNum(1), IntNum(2)), IntNum(3)), ""))
-  )
-  assertEquals(
-    expression("1/(2-3)"),
-    Some(PResult(Div(IntNum(1), Sub(IntNum(2), IntNum(3))), ""))
-  )
-  assertEquals(
-    expression("(1+2)*(3-4)"),
-    Some(PResult(Mul(Add(IntNum(1), IntNum(2)), Sub(IntNum(3), IntNum(4))), ""))
-  )
-  assertEquals(
-    expression("(1+2)*3/4"),
-    Some(PResult(Div(Mul(Add(IntNum(1), IntNum(2)), IntNum(3)), IntNum(4)), ""))
-  )
+    assertEquals(
+      expression("(1+2)*3"),
+      Some(PResult(Mul(Add(IntNum(1), IntNum(2)), IntNum(3)), ""))
+    )
+    assertEquals(
+      expression("1/(2-3)"),
+      Some(PResult(Div(IntNum(1), Sub(IntNum(2), IntNum(3))), ""))
+    )
+    assertEquals(
+      expression("(1+2)*(3-4)"),
+      Some(
+        PResult(Mul(Add(IntNum(1), IntNum(2)), Sub(IntNum(3), IntNum(4))), "")
+      )
+    )
+    assertEquals(
+      expression("(1+2)*3/4"),
+      Some(
+        PResult(Div(Mul(Add(IntNum(1), IntNum(2)), IntNum(3)), IntNum(4)), "")
+      )
+    )
+    assertEquals(expression("true"), Some(PResult(Bool(true), "")))
   }
 }

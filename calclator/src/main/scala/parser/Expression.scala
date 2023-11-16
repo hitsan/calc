@@ -15,7 +15,7 @@ object Expression {
 
   def unary: Parser[Node] = code => primary(code)
   def primary: Parser[Node] = code =>
-    (intNum | anyString | parenthesesExpr)(code)
+    (intNum | bool | anyString | parenthesesExpr)(code)
 
   def parenthesesExpr: Parser[Node] = code =>
     and(char('('), expression, char(')')).struct(exprRule)(code)
