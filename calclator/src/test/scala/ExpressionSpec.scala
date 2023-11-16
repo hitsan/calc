@@ -136,5 +136,6 @@ class ExpressionSpec extends munit.FunSuite {
       )
     )
     assertEquals(expression("true"), Some(PResult(Bool(true), "")))
+    assertEquals(expression("false"), Some(PResult(Bool(false), "")))
   }
 }

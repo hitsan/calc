@@ -23,6 +23,7 @@ object Primitive {
       val str = (Str("") /: tokens) { (str, char) =>
         (str, char) match
           case (Str(str), Achar(char)) => Str(str + char)
+          case _                       =>  sys.error("Invalid token")
       }
       PResult(str, rest)
     }
@@ -34,6 +35,7 @@ object Primitive {
       val number = (IntNum(0) /: tokens) { (acc, num) =>
         (acc, num) match
           case (IntNum(n1), IntNum(n2)) => IntNum(10 * n1 + n2)
+          case _=>  sys.error("Invalid token")
       }
       PResult(number, rest)
     }
@@ -61,13 +63,18 @@ object Primitive {
       operation <- charToOp(token)
     } yield PResult(operation, rest)
 
+  def bangS: Parser[OneHand] = code =>
+    charS('!')(code).map { case PResult(token, rest) =>
+      PResult(rhs => Bang(rhs), rest)
+    }
+
   def boolS: Parser[Node] = code =>
     (parseBool("true") | parseBool("false"))(code)
 
   def parseBool(bool: "true" | "false"): Parser[Node] = code =>
-    for {
-      PResult(value, rest) <- stringS(bool)(code)
-    } yield PResult(Bool(bool.toBoolean), rest)
+    stringS(bool)(code).map { case PResult(value, rest) =>
+      PResult(Bool(bool.toBoolean), rest)
+    }
 
   def skipSpace[A](parser: Parser[A]): Parser[A] =
     code => parser(code.trim)
@@ -83,5 +90,6 @@ object Primitive {
   def minus = skipSpace(operater('-'))
   def times = skipSpace(operater('*'))
   def divide = skipSpace(operater('/'))
+  def bang = skipSpace(bangS)
   def bool = skipSpace(boolS)
 }

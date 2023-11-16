@@ -57,4 +57,8 @@ class PrimitiveSpec extends munit.FunSuite {
     assertEquals(bool("  true 12"), Some(PResult(Bool(true), " 12")))
     assertEquals(bool("if"), None)
   }
+
+  test("bang") {
+    assertEquals(bang("if"), None)
+  }
 }

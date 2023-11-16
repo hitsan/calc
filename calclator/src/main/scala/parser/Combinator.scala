@@ -68,7 +68,7 @@ object Combinator {
 
   extension [A](parser: Parser[A])
     def struct(f: A => Node): Parser[Node] = code =>
-      for {
-        PResult(tokens, rest) <- parser(code)
-      } yield PResult(f(tokens), rest)
+      parser(code).map{ case PResult(tokens, rest) => 
+        PResult(f(tokens), rest)
+      }
 }
