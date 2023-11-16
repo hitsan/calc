@@ -4,7 +4,6 @@ RUN apt-get -y update \
  && apt-get -y --no-install-recommends install \
     curl \
     gnupg \
-    gosu \
     openjdk-11-jdk \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
@@ -17,7 +16,6 @@ RUN apt-get -y update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-# COPY endpoint.sh /usr/bin/endpoint.sh
-# RUN chmod +x /usr/bin/endpoint.sh
-# ENTRYPOINT [ "/usr/bin/endpoint.sh" ]
-# CMD ["/bin/bash"]
+# Pre-download sbt dependencies
+# WORKDIR /app/calcrator
+# RUN mkdir project && echo "sbt.version=1.9.3" > project/build.properties && sbt update
