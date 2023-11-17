@@ -46,7 +46,7 @@ class PrimitiveSpec extends munit.FunSuite {
   test("Any string") {
     assertEquals(anyString("if"), Some(PResult(Str("if"), "")))
     assertEquals(anyString("ifelse"), Some(PResult(Str("ifelse"), "")))
-    assertEquals(anyString("11+2"), None)
+    assertEquals(anyString("11+2"), Some(PResult(Str("11+2"), "")))
     assertEquals(anyString(""), None)
   }
 
