@@ -175,6 +175,8 @@ class ExpressionSpec extends munit.FunSuite {
       expression("1*2+(-3)"),
       Some(PResult(Add(Mul(IntNum(1), IntNum(2)), Negative(IntNum(3))), ""))
     )
+    assertEquals(expression(""), None)
+    assertEquals(expression("+23*4"), None)
   }
 
   test("bool expression") {
@@ -182,4 +184,19 @@ class ExpressionSpec extends munit.FunSuite {
     assertEquals(expression("false"), Some(PResult(Bool(false), "")))
     assertEquals(expression("!false"), Some(PResult(Bang(Bool(false)), "")))
   }
+
+  // test("abnormal test"){
+  //   assertEquals(
+  //     expression("1 + true"),
+  //     None
+  //   )
+  //   assertEquals(
+  //     expression("false - 2"),
+  //     None
+  //   )
+  //   assertEquals(
+  //     expression("3 * hello"),
+  //     None
+  //   )
+  // }
 }

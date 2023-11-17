@@ -21,4 +21,36 @@ object Expression {
 
   def parenthesesExpr: Parser[Node] = code =>
     and(char('('), expression, char(')')).struct(parenthesesRule)(code)
+
+  extension [A](parser: Parser[A])
+    def struct(f: A => Node): Parser[Node] = code =>
+      parser(code).map { case PResult(tokens, rest) =>
+        PResult(f(tokens), rest)
+      }
+
+  def astRule[A <: List[_]](tokens: A): Node = {
+    val initial = tokens.head match {
+      case head: List[_] => astRule(head)
+      case head: Ast     => head
+    }
+    tokens.tail.foldLeft(initial) { (ast, token) =>
+      (ast, token) match {
+        case (n: Node, l: List[_])    => astRule(n +: l)
+        case (rhs: Node, op: TwoHand) => op(rhs)
+        case (op: OneHand, lhs: Node) => op(lhs)
+        case (_, _)                   => ast
+      }
+    }.asInstanceOf[Node]
+  }
+
+  def unaryRule[A <: List[_]](tokens: A): Node =
+    (tokens.head, tokens.last) match {
+      case (op: OneHand, rhs: Node) => op(rhs)
+      case (_, _)                   => sys.error("Invalid token")
+    }
+
+  def parenthesesRule[A <: List[_]](tokens: A): Node =
+    (tokens.head, tokens(1), tokens.last) match {
+      case (Achar('('), n: Node, Achar(')')) => n
+    }
 }
