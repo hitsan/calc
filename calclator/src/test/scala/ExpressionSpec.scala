@@ -135,7 +135,51 @@ class ExpressionSpec extends munit.FunSuite {
         PResult(Div(Mul(Add(IntNum(1), IntNum(2)), IntNum(3)), IntNum(4)), "")
       )
     )
+    assertEquals(expression("-1"), Some(PResult(Negative(IntNum(1)), "")))
+    assertEquals(
+      expression("-1+2"),
+      Some(PResult(Add(Negative(IntNum(1)), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1+(-2)"),
+      Some(PResult(Add(IntNum(1), Negative(IntNum(2))), ""))
+    )
+    assertEquals(
+      expression("1*(-2)"),
+      Some(PResult(Mul(IntNum(1), Negative(IntNum(2))), ""))
+    )
+  }
+
+  test("expression with negative numbers in polynomials") {
+    assertEquals(
+      expression("1+(-2)+3"),
+      Some(PResult(Add(Add(IntNum(1), Negative(IntNum(2))), IntNum(3)), ""))
+    )
+    assertEquals(
+      expression("1-(-2)-3"),
+      Some(PResult(Sub(Sub(IntNum(1), Negative(IntNum(2))), IntNum(3)), ""))
+    )
+    assertEquals(
+      expression("1*(-2)*3"),
+      Some(PResult(Mul(Mul(IntNum(1), Negative(IntNum(2))), IntNum(3)), ""))
+    )
+    assertEquals(
+      expression("1/(-2)/3"),
+      Some(PResult(Div(Div(IntNum(1), Negative(IntNum(2))), IntNum(3)), ""))
+    )
+    assertEquals(
+      expression("1+2*(-3)"),
+      Some(PResult(Add(IntNum(1), Mul(IntNum(2), Negative(IntNum(3)))), ""))
+    )
+    assertEquals(
+      expression("1*2+(-3)"),
+      Some(PResult(Add(Mul(IntNum(1), IntNum(2)), Negative(IntNum(3))), ""))
+    )
+  }
+
+  test("bool expression") {
     assertEquals(expression("true"), Some(PResult(Bool(true), "")))
     assertEquals(expression("false"), Some(PResult(Bool(false), "")))
+    assertEquals(expression("!false"), Some(PResult(Bang(Bool(false)), "")))
   }
 }

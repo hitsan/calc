@@ -58,9 +58,15 @@ object Combinator {
       }
     } match {
       case n: Node => n
-      case _       =>  sys.error("Invalid token")
+      case _       => sys.error("Invalid token")
     }
   }
+
+  def uneryRule[A <: List[_]](tokens: A): Node =
+    (tokens.head, tokens.last) match {
+      case (op: OneHand, rhs: Node)    => op(rhs)
+      case (_, _)                     => sys.error("Invalid token")
+    }
 
   def exprRule[A <: List[_]](tokens: A): Node =
     (tokens.head, tokens(1), tokens.last) match {
@@ -69,7 +75,7 @@ object Combinator {
 
   extension [A](parser: Parser[A])
     def struct(f: A => Node): Parser[Node] = code =>
-      parser(code).map{ case PResult(tokens, rest) => 
+      parser(code).map { case PResult(tokens, rest) =>
         PResult(f(tokens), rest)
       }
 }

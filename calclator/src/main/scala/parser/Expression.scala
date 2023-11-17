@@ -13,7 +13,7 @@ object Expression {
   def factor: Parser[Node] = code =>
     (unary & ((times | divide) & unary).*).struct(astRule)(code)
 
-  def unary: Parser[Node] = code => (((bang | negative) & unary) | primary).struct(astRule)(code)
+  def unary: Parser[Node] = code => ((bang | negative) & unary).struct(uneryRule)(code).orElse(primary(code))
   def primary: Parser[Node] = code =>
     (intNum | bool | anyString | parenthesesExpr)(code)
 
