@@ -25,14 +25,15 @@ object Combinator {
 
   extension [A](parser: Parser[A]) def * = rep0(parser)
 
-  def and[A, B](parsers: OrParser[A, B]*): Parser[List[A | B]] = code =>
+  def and[A, B](parsers: OrParser[A, B]*): Parser[List[A | B]] = code => {
     val initial = Option(PResult(List[A | B](), code))
-    (initial /: parsers) { (acc, parser) =>
+    parsers.foldLeft(initial) { (acc, parser) =>
       for {
         PResult(tokens, code) <- acc
         case PResult[(A | B)](token, rest) <- parser(code)
       } yield PResult(tokens :+ token, rest)
     }
+  }
 
   extension [A, B](parser: OrParser[A, B])
     def &(parser2: OrParser[A, B]) = and(parser, parser2)
@@ -48,7 +49,7 @@ object Combinator {
       case head: List[_] => astRule(head)
       case head: Ast     => head
     }
-    (initial /: tokens.tail) { (ast, token) =>
+    tokens.tail.foldLeft(initial) { (ast, token) =>
       (ast, token) match {
         case (n: Node, l: List[_])    => astRule(n +: l)
         case (rhs: Node, op: TwoHand) => op(rhs)
