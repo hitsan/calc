@@ -7,14 +7,14 @@ object Primitive {
 
   // Don't allow space
   def anyCharS: Parser[Node] = code =>
-    for {
-      head <- code.headOption if head.isLetter
-    } yield PResult(Achar(head), code.tail)
+    code.headOption.withFilter(_.isLetter).map { head =>
+      PResult(Achar(head), code.tail)
+    }
 
   def digitS: Parser[Node] = code =>
-    for {
-      head <- code.headOption if head.isDigit
-    } yield PResult(IntNum(head.asDigit), code.tail)
+    code.headOption.withFilter(_.isDigit).map { head =>
+      PResult(IntNum(head.asDigit), code.tail)
+    }
 
   def anyStringS: Parser[Node] = code => {
     def joinChars(chars: List[Node]): Node = chars.foldLeft(Str("")) { 
