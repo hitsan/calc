@@ -70,14 +70,9 @@ object Primitive {
       PResult(rhs => Bang(rhs), rest)
     }
 
-  // def negativeS: Parser[OneHand] = code =>
-  //   charS('-')(code).map { case PResult(token, rest) =>
-  //     PResult(num => Negative(num), rest)
-  //   }
-
   def negativeS: Parser[OneHand] = code =>
     charS('-')(code).map { case PResult(token, rest) =>
-      PResult((num: IntNum) => IntNum(-num.n), rest)
+      PResult(num => Negative(num), rest)
     }
 
   def boolS: Parser[Node] = code =>

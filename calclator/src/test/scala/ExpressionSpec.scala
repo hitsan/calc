@@ -141,11 +141,11 @@ class ExpressionSpec extends munit.FunSuite {
       Some(PResult(Add(Negative(IntNum(1)), IntNum(2)), ""))
     )
     assertEquals(
-      expression("1+(-2)"),
+      expression("1+ -2"),
       Some(PResult(Add(IntNum(1), Negative(IntNum(2))), ""))
     )
     assertEquals(
-      expression("1*(-2)"),
+      expression("1* -2"),
       Some(PResult(Mul(IntNum(1), Negative(IntNum(2))), ""))
     )
   }
