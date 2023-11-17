@@ -70,6 +70,11 @@ object Primitive {
       PResult(rhs => Bang(rhs), rest)
     }
 
+  def negativeS: Parser[OneHand] = code =>
+    charS('-')(code).map { case PResult(token, rest) =>
+      PResult(num => NIntNum(num), rest)
+    }
+
   def boolS: Parser[Node] = code =>
     (parseBool("true") | parseBool("false"))(code)
 
@@ -94,4 +99,5 @@ object Primitive {
   def divide = skipSpace(operater('/'))
   def bang = skipSpace(bangS)
   def bool = skipSpace(boolS)
+  def negative = skipSpace(negativeS)
 }

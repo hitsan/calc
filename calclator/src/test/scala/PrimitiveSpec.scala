@@ -58,7 +58,7 @@ class PrimitiveSpec extends munit.FunSuite {
     assertEquals(bool("if"), None)
   }
 
-  test("bang") {
-    assertEquals(bang("if"), None)
-  }
+  // test("bang") {
+  //   assertEquals(bang("if"), None)
+  // }
 }

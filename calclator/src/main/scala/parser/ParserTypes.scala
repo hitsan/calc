@@ -21,6 +21,7 @@ enum Node:
   case Div(lhs: Node, rhs: Node)
   case Bang(rhs: Node)
   case IntNum(n: Int)
+  case NIntNum(n: Node)
   case Str(str: String)
   case Achar(char: Char)
   case Bool(value: Boolean)
