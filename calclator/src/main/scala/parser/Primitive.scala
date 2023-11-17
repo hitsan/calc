@@ -7,7 +7,7 @@ object Primitive {
 
   // Don't allow space
   def anyCharS: Parser[Node] = code =>
-    code.headOption.withFilter(!_.isWhitespace).map { head =>
+    code.headOption.withFilter(_.isLetter).map { head =>
       PResult(Achar(head), code.tail)
     }
 
