@@ -184,6 +184,86 @@ class ExpressionSpec extends munit.FunSuite {
     assertEquals(expression("true"), Some(PResult(Bool(true), "")))
     assertEquals(expression("false"), Some(PResult(Bool(false), "")))
     assertEquals(expression("!false"), Some(PResult(Bang(Bool(false)), "")))
-    assertEquals(expression("!!false"), Some(PResult(Bang(Bang(Bool(false))), "")))
+    assertEquals(
+      expression("!!false"),
+      Some(PResult(Bang(Bang(Bool(false))), ""))
+    )
+  }
+
+  test("comparison operators") {
+    assertEquals(
+      expression("1 < 2"),
+      Some(PResult(LessThan(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1 > 2"),
+      Some(PResult(GreaterThan(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1 <= 2"),
+      Some(PResult(LessThanOrEqual(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1 >= 2"),
+      Some(PResult(GreaterThanOrEqual(IntNum(1), IntNum(2)), ""))
+    )
+    // assertEquals(
+    //   expression("1 == 2"),
+    //   Some(PResult(Equals(IntNum(1), IntNum(2)), ""))
+    // )
+    // assertEquals(
+    //   expression("1 != 2"),
+    //   Some(PResult(NotEquals(IntNum(1), IntNum(2)), ""))
+    // )
+  }
+
+  test("comparison operators - edge cases") {
+    assertEquals(
+      expression("1 < 1"),
+      Some(PResult(LessThan(IntNum(1), IntNum(1)), ""))
+    )
+    assertEquals(
+      expression("1 > 1"),
+      Some(PResult(GreaterThan(IntNum(1), IntNum(1)), ""))
+    )
+    assertEquals(
+      expression("1 <= 1"),
+      Some(PResult(LessThanOrEqual(IntNum(1), IntNum(1)), ""))
+    )
+    assertEquals(
+      expression("1 >= 1"),
+      Some(PResult(GreaterThanOrEqual(IntNum(1), IntNum(1)), ""))
+    )
+    // assertEquals(
+    //   expression("1 == 1"),
+    //   Some(PResult(Equals(IntNum(1), IntNum(1)), ""))
+    // )
+    // assertEquals(
+    //   expression("1 != 1"),
+    //   Some(PResult(NotEquals(IntNum(1), IntNum(1)), ""))
+    // )
+  }
+
+  test("comparison operators - invalid expressions") {
+    assertEquals(
+      expression("1 <"),
+      None
+    )
+    assertEquals(
+      expression("> 2"),
+      None
+    )
+    assertEquals(
+      expression("1 <= 2 >"),
+      None
+    )
+    // assertEquals(
+    //   expression("1 >= 2 =="),
+    //   None
+    // )
+    // assertEquals(
+    //   expression("1 !="),
+    //   None
+    // )
   }
 }
