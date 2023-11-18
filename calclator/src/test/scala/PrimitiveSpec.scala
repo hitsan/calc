@@ -5,8 +5,8 @@ class PrimitiveSpec extends munit.FunSuite {
 
   test("Char") {
     val p = char('a')
-    assertEquals(p("  a"), Some(PResult(Achar('a'), ""))) 
-    assertEquals(p("aa"), Some(PResult(Achar('a'), "a"))) 
+    assertEquals(p("  a"), Some(PResult(Achar('a'), "")))
+    assertEquals(p("aa"), Some(PResult(Achar('a'), "a")))
     assertEquals(p("1+1"), None)
     assertEquals(p(""), None)
   }
@@ -49,4 +49,16 @@ class PrimitiveSpec extends munit.FunSuite {
     assertEquals(anyString("11+2"), None)
     assertEquals(anyString(""), None)
   }
+
+  test("boolean") {
+    assertEquals(bool("true"), Some(PResult(Bool(true), "")))
+    assertEquals(bool("false"), Some(PResult(Bool(false), "")))
+    assertEquals(bool("  true"), Some(PResult(Bool(true), "")))
+    assertEquals(bool("  true 12"), Some(PResult(Bool(true), " 12")))
+    assertEquals(bool("if"), None)
+  }
+
+  // test("bang") {
+  //   assertEquals(bang("if"), None)
+  // }
 }

@@ -19,9 +19,14 @@ enum Node:
   case Sub(lhs: Node, rhs: Node)
   case Mul(lhs: Node, rhs: Node)
   case Div(lhs: Node, rhs: Node)
+  case Bang(rhs: Node)
   case IntNum(n: Int)
+  case Negative(n: Node)
   case Str(str: String)
   case Achar(char: Char)
+  case Bool(value: Boolean)
+  case LParentheses
+  case RParentheses
 type OneHand = Node => Node
 type TwoHand = Node => Node => Node
 type Ast = Node | OneHand | TwoHand
