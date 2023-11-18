@@ -88,8 +88,28 @@ object Primitive {
       PResult(LParentheses, rest)
     }
   def rParenthesesS: Parser[Node] = code =>
-    charS('(')(code).map { case PResult(token, rest) =>
+    charS(')')(code).map { case PResult(token, rest) =>
       PResult(RParentheses, rest)
+    }
+
+  def greaterS: Parser[TwoHand] = code =>
+    charS('>')(code).map { case PResult(token, rest) =>
+      PResult(lhs => rhs => Greater(lhs, rhs), rest)
+    }
+
+  def greaterEqualS: Parser[TwoHand] = code =>
+    stringS(">=")(code).map { case PResult(token, rest) =>
+      PResult(lhs => rhs => GreaterEqual(lhs, rhs), rest)
+    }
+
+  def lessS: Parser[TwoHand] = code =>
+    charS('<')(code).map { case PResult(token, rest) =>
+      PResult(lhs => rhs => Less(lhs, rhs), rest)
+    }
+
+  def lessEqualS: Parser[TwoHand] = code =>
+    stringS("<=")(code).map { case PResult(token, rest) =>
+      PResult(lhs => rhs => LessEqual(lhs, rhs), rest)
     }
 
   def skipSpace[A](parser: Parser[A]): Parser[A] =
@@ -111,4 +131,8 @@ object Primitive {
   def negative = skipSpace(negativeS)
   def lParentheses = skipSpace(lParenthesesS)
   def rParentheses = skipSpace(rParenthesesS)
+  def greater = skipSpace(greaterS)
+  def greaterEqual = skipSpace(greaterEqualS)
+  def less = skipSpace(lessS)
+  def lessEqual = skipSpace(lessEqualS)
 }
