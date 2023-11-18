@@ -6,7 +6,11 @@ object Expression {
   import Combinator._
 
   // Parser Expression
-  def expression: Parser[Node] = code => term(code)
+  def expression: Parser[Node] = code => comparison(code)
+
+  def comparison: Parser[Node] = code =>
+    (term & ((greaterEqual | greater | lessEqual | less ) & term).*).struct(astRule)(code)
+
   def term: Parser[Node] = code =>
     (factor & ((plus | minus) & factor).*).struct(astRule)(code)
 
