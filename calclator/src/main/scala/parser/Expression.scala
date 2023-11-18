@@ -51,6 +51,6 @@ object Expression {
 
   def parenthesesRule[A <: List[_]](tokens: A): Node =
     (tokens.head, tokens(1), tokens.last) match {
-      case (Achar('('), n: Node, Achar(')')) => n
+      case (lParentheses, n: Node, rParentheses) => n
     }
 }

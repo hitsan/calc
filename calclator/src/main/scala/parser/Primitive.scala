@@ -83,6 +83,15 @@ object Primitive {
       PResult(Bool(bool.toBoolean), rest)
     }
 
+  def lParenthesesS: Parser[Node] = code =>
+    charS('(')(code).map { case PResult(token, rest) =>
+      PResult(LParentheses, rest)
+    }
+  def rParenthesesS: Parser[Node] = code =>
+    charS('(')(code).map { case PResult(token, rest) =>
+      PResult(RParentheses, rest)
+    }
+
   def skipSpace[A](parser: Parser[A]): Parser[A] =
     code => parser(code.trim)
 
@@ -100,4 +109,6 @@ object Primitive {
   def bang = skipSpace(bangS)
   def bool = skipSpace(boolS)
   def negative = skipSpace(negativeS)
+  def lParentheses = skipSpace(lParenthesesS)
+  def rParentheses = skipSpace(rParenthesesS)
 }
