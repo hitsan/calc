@@ -15,6 +15,7 @@ RUN apt-get -y update \
     git \
     gnupg \
     openjdk-11-jdk \
+    openssh-client \
     ssh \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
