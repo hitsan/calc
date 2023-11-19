@@ -15,6 +15,7 @@ RUN apt-get -y update \
     git \
     gnupg \
     openjdk-11-jdk \
+    ssh \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" >> /etc/apt/sources.list.d/sbt.list \
