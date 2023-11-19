@@ -25,7 +25,7 @@ object Expression {
     (intNum | bool | anyString | parenthesesExpr)(code)
 
   def parenthesesExpr: Parser[Node] = code =>
-    and(char('('), expression, char(')')).struct(parenthesesRule)(code)
+    and(lParentheses, expression, rParentheses).struct(parenthesesRule)(code)
 
   extension [A](parser: Parser[A])
     def struct(f: A => Node): Parser[Node] = code =>
@@ -58,6 +58,6 @@ object Expression {
 
   def parenthesesRule[A <: List[_]](tokens: A): Node =
     (tokens.head, tokens(1), tokens.last) match {
-      case (lParentheses, n: Node, rParentheses) => n
+      case (LParentheses, n: Node, RParentheses) => n
     }
 }
