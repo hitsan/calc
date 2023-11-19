@@ -13,7 +13,7 @@ A calcrator that is implemented by scala
 
 ### Build Docker image
 ```shell
-$ source build_image.sh
+$ ./container.sh up build
 ```
 
 ### lanunch container
