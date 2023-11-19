@@ -4,12 +4,8 @@ object Eval {
   import Node._
 
   extension (result: Option[PResult[Node]])
-    def eval: Int = {
-      val num = for {
-        PResult(node, rest) <- result
-      } yield calc(node)
-      num.get
-    }
+    def eval: Int =
+      result.flatMap(r => Some(calc(r.token))).getOrElse(0)
 
   def calc(node: Node): Int = {
     node match {
