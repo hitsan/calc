@@ -9,7 +9,8 @@ object Expression {
   def expression: Parser[Node] = code => comparison(code)
 
   def comparison: Parser[Node] = code =>
-    (term & ((greaterEqual | greater | lessEqual | less ) & term).*).struct(astRule)(code)
+    (term & ((greaterEqual | greater | lessEqual | less) & term).*)
+      .struct(astRule)(code)
 
   def term: Parser[Node] = code =>
     (factor & ((plus | minus) & factor).*).struct(astRule)(code)
@@ -37,14 +38,16 @@ object Expression {
       case head: List[_] => astRule(head)
       case head: Ast     => head
     }
-    tokens.tail.foldLeft(initial) { (ast, token) =>
-      (ast, token) match {
-        case (n: Node, l: List[_])    => astRule(n +: l)
-        case (rhs: Node, op: TwoHand) => op(rhs)
-        case (op: OneHand, lhs: Node) => op(lhs)
-        case (_, _)                   => ast
+    tokens.tail
+      .foldLeft(initial) { (ast, token) =>
+        (ast, token) match {
+          case (n: Node, l: List[_])    => astRule(n +: l)
+          case (rhs: Node, op: TwoHand) => op(rhs)
+          case (op: OneHand, lhs: Node) => op(lhs)
+          case (_, _)                   => ast
+        }
       }
-    }.asInstanceOf[Node]
+      .asInstanceOf[Node]
   }
 
   def unaryRule[A <: List[_]](tokens: A): Node =
