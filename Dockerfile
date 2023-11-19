@@ -1,10 +1,22 @@
 FROM ubuntu:22.04
 
+ARG USER_ID
+ARG GROUP_ID
+ARG USER
+
+RUN groupadd -g ${GROUP_ID} ${USER} && \
+    useradd -u ${USER_ID} -g ${GROUP_ID} -m ${USER} && \
+    mkdir -p /home/${USER}/.ssh && \
+    chown -R ${USER}:${USER} /home/${USER}
+
 RUN apt-get -y update \
  && apt-get -y --no-install-recommends install \
     curl \
+    git \
     gnupg \
     openjdk-11-jdk \
+    openssh-client \
+    ssh \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" >> /etc/apt/sources.list.d/sbt.list \
@@ -15,3 +27,11 @@ RUN apt-get -y update \
     sbt \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
+
+USER ${USER}
+WORKDIR /home/${USER}
+RUN ssh-keyscan github.com >> /home/${USER}/.ssh/known_hosts
+
+# Pre-download sbt dependencies
+# WORKDIR /app/calcrator
+# RUN mkdir project && echo "sbt.version=1.9.3" > project/build.properties && sbt update
