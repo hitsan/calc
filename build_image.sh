@@ -5,4 +5,4 @@ export USER_ID=$(id -u)
 export GROUP_ID=$(id -g)
 export USER=$(whoami)
 
-docker-compose build
+docker compose build --no-cache

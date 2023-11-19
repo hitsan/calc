@@ -6,7 +6,7 @@ ARG USER
 
 RUN groupadd -g ${GROUP_ID} ${USER} && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -m ${USER} && \
-    mkdir -p /home/${USER} && \
+    mkdir -p /home/${USER}/.ssh && \
     chown -R ${USER}:${USER} /home/${USER}
 
 RUN apt-get -y update \
@@ -26,6 +26,10 @@ RUN apt-get -y update \
     sbt \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
+
+USER ${USER}
+WORKDIR /home/${USER}
+RUN ssh-keyscan github.com >> /home/${USER}/.ssh/known_hosts
 
 # Pre-download sbt dependencies
 # WORKDIR /app/calcrator
