@@ -1,8 +1,18 @@
 FROM ubuntu:22.04
 
+ARG USER_ID
+ARG GROUP_ID
+ARG USER
+
+RUN groupadd -g ${GROUP_ID} ${USER} && \
+    useradd -u ${USER_ID} -g ${GROUP_ID} -m ${USER} && \
+    mkdir -p /home/${USER} && \
+    chown -R ${USER}:${USER} /home/${USER}
+
 RUN apt-get -y update \
  && apt-get -y --no-install-recommends install \
     curl \
+    git \
     gnupg \
     openjdk-11-jdk \
  && apt-get clean \

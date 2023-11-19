@@ -2,12 +2,21 @@ version: '3.5'
 
 services:
   sbt_env:
-    build: .
-    user:
-      1000:1000
+    build:
+      context: .
+      args:
+        CUR_DIR: ${CUR_DIR}
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
+        USER: ${USER}
+    user: ${USER_ID}:${GROUP_ID}
+    container_name: calc_env
+    ports:
+      - "8080:8080"
     volumes:
-      - ./:/app
-      - /etc/passwd:/etc/passwd:ro
+      - ${CUR_DIR}:${HOME}/app
+      - /home/${USER}/.ssh:/home/user/.ssh:ro
       - /etc/group:/etc/group:ro
-    working_dir: /app
+      - /etc/passwd:/etc/passwd:ro
+    working_dir: ${HOME}/app
     tty: true
