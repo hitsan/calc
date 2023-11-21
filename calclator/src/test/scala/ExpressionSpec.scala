@@ -190,6 +190,33 @@ class ExpressionSpec extends munit.FunSuite {
     )
   }
 
+  test("comparison operators") {
+    assertEquals(
+      expression("1 < 2"),
+      Some(PResult(Less(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1 > 2"),
+      Some(PResult(Greater(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1 <= 2"),
+      Some(PResult(LessEqual(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1 >= 2"),
+      Some(PResult(GreaterEqual(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1 == 2"),
+      Some(PResult(Equals(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1 != 2"),
+      Some(PResult(NotEquals(IntNum(1), IntNum(2)), ""))
+    )
+  }
+
   // test("expression with invalid characters") {
   //   // assertEquals(expression("1a"), None)
   //   assertEquals(expression("1+*2"), None)
@@ -215,60 +242,6 @@ class ExpressionSpec extends munit.FunSuite {
   //   assertEquals(expression("!1"), None)
   //   assertEquals(expression("-"), None)
   //   assertEquals(expression("!"), None)
-  // }
-
-  // test("comparison operators") {
-  //   assertEquals(
-  //     expression("1 < 2"),
-  //     Some(PResult(Less(IntNum(1), IntNum(2)), ""))
-  //   )
-  //   assertEquals(
-  //     expression("1 > 2"),
-  //     Some(PResult(Greater(IntNum(1), IntNum(2)), ""))
-  //   )
-  //   assertEquals(
-  //     expression("1 <= 2"),
-  //     Some(PResult(LessEqual(IntNum(1), IntNum(2)), ""))
-  //   )
-  //   assertEquals(
-  //     expression("1 >= 2"),
-  //     Some(PResult(GreaterEqual(IntNum(1), IntNum(2)), ""))
-  //   )
-  //   // assertEquals(
-  //   //   expression("1 == 2"),
-  //   //   Some(PResult(Equals(IntNum(1), IntNum(2)), ""))
-  //   // )
-  //   // assertEquals(
-  //   //   expression("1 != 2"),
-  //   //   Some(PResult(NotEquals(IntNum(1), IntNum(2)), ""))
-  //   // )
-  // }
-
-  // test("comparison operators - edge cases") {
-  //   assertEquals(
-  //     expression("1 < 1"),
-  //     Some(PResult(Less(IntNum(1), IntNum(1)), ""))
-  //   )
-  //   assertEquals(
-  //     expression("1 > 1"),
-  //     Some(PResult(Greater(IntNum(1), IntNum(1)), ""))
-  //   )
-  //   assertEquals(
-  //     expression("1 <= 1"),
-  //     Some(PResult(LessEqual(IntNum(1), IntNum(1)), ""))
-  //   )
-  //   assertEquals(
-  //     expression("1 >= 1"),
-  //     Some(PResult(GreaterEqual(IntNum(1), IntNum(1)), ""))
-  //   )
-  //   // assertEquals(
-  //   //   expression("1 == 1"),
-  //   //   Some(PResult(Equals(IntNum(1), IntNum(1)), ""))
-  //   // )
-  //   // assertEquals(
-  //   //   expression("1 != 1"),
-  //   //   Some(PResult(NotEquals(IntNum(1), IntNum(1)), ""))
-  //   // )
   // }
 
   // test("comparison operators - invalid expressions") {

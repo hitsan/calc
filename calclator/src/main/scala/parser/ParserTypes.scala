@@ -1,8 +1,6 @@
 package parser
 import Node._
 
-type Operater = '+' | '-' | '*' | '/'
-
 case class PResult[T](
     token: T,
     rest: String
@@ -27,6 +25,8 @@ enum Node:
   case Bool(value: Boolean)
   case LParentheses
   case RParentheses
+  case Equals(lhs: Node, rhs: Node)
+  case NotEquals(lhs: Node, rhs: Node)
   case Greater(lhs: Node, rhs: Node)
   case GreaterEqual(lhs: Node, rhs: Node)
   case Less(lhs: Node, rhs: Node)
@@ -34,8 +34,3 @@ enum Node:
 type OneHand = Node => Node
 type TwoHand = Node => Node => Node
 type Ast = Node | OneHand | TwoHand
-
-def add: TwoHand = lhs => rhs => Add(lhs, rhs)
-def sub: TwoHand = lhs => rhs => Sub(lhs, rhs)
-def mul: TwoHand = lhs => rhs => Mul(lhs, rhs)
-def div: TwoHand = lhs => rhs => Div(lhs, rhs)
