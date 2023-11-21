@@ -131,7 +131,7 @@ object Primitive {
   def negative = skipSpace(monoOperater('-'))
   def lParentheses = skipSpace(keyword('('))
   def rParentheses = skipSpace(keyword(')'))
-  def equal = skipSpace(binOperater('='))
+  def equal = skipSpace(binOperater("=="))
   def notEqual = skipSpace(binOperater("!="))
   def greater = skipSpace(binOperater('>'))
   def greaterEqual = skipSpace(binOperater(">="))

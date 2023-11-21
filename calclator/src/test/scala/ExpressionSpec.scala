@@ -207,14 +207,14 @@ class ExpressionSpec extends munit.FunSuite {
       expression("1 >= 2"),
       Some(PResult(GreaterEqual(IntNum(1), IntNum(2)), ""))
     )
-    // assertEquals(
-    //   expression("1 == 2"),
-    //   Some(PResult(Equals(IntNum(1), IntNum(2)), ""))
-    // )
-    // assertEquals(
-    //   expression("1 != 2"),
-    //   Some(PResult(NotEquals(IntNum(1), IntNum(2)), ""))
-    // )
+    assertEquals(
+      expression("1 == 2"),
+      Some(PResult(Equals(IntNum(1), IntNum(2)), ""))
+    )
+    assertEquals(
+      expression("1 != 2"),
+      Some(PResult(NotEquals(IntNum(1), IntNum(2)), ""))
+    )
   }
 
   // test("expression with invalid characters") {
