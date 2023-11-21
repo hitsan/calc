@@ -216,45 +216,4 @@ class ExpressionSpec extends munit.FunSuite {
       Some(PResult(NotEquals(IntNum(1), IntNum(2)), ""))
     )
   }
-
-  // test("expression with invalid characters") {
-  //   // assertEquals(expression("1a"), None)
-  //   assertEquals(expression("1+*2"), None)
-  //   assertEquals(expression("1++2"), None)
-  //   assertEquals(expression("1..2"), None)
-  //   assertEquals(expression("1/0"), None)
-  // }
-
-  // test("expression with missing operands") {
-  //   assertEquals(expression("1+"), None)
-  //   assertEquals(expression("*2"), None)
-  //   assertEquals(expression("/"), None)
-  // }
-
-  // test("expression with unbalanced parentheses") {
-  //   assertEquals(expression("(1+2"), None)
-  //   assertEquals(expression("1+2)"), None)
-  //   assertEquals(expression("((1+2)"), None)
-  //   assertEquals(expression("(1+2))"), None)
-  // }
-
-  // test("expression with invalid unary operators") {
-  //   assertEquals(expression("!1"), None)
-  //   assertEquals(expression("-"), None)
-  //   assertEquals(expression("!"), None)
-  // }
-
-  // test("comparison operators - invalid expressions") {
-  //   assertEquals(expression("1 <"), None)
-  //   assertEquals(expression("> 2"), None)
-  //   assertEquals(expression("1 <= 2 >"), None)
-  // assertEquals(
-  //   expression("1 >= 2 =="),
-  //   None
-  // )
-  // assertEquals(
-  //   expression("1 !="),
-  //   None
-  // )
-  // }
 }

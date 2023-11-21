@@ -1,6 +1,8 @@
 package parser
 import Node._
 
+case class ParserError(msg: String) extends Exception(msg)
+
 case class PResult[T](
     token: T,
     rest: String
