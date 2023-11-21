@@ -9,7 +9,8 @@ object Expression {
   def expression: Parser[Node] = code => comparison(code)
 
   def comparison: Parser[Node] = code =>
-    (term & ((greaterEqual | greater | lessEqual | less ) & term).*).struct(astRule)(code)
+    (term & ((greaterEqual | greater | lessEqual | less) & term).*)
+      .struct(astRule)(code)
 
   def term: Parser[Node] = code =>
     (factor & ((plus | minus) & factor).*).struct(astRule)(code)
@@ -24,7 +25,7 @@ object Expression {
     (intNum | bool | anyString | parenthesesExpr)(code)
 
   def parenthesesExpr: Parser[Node] = code =>
-    and(char('('), expression, char(')')).struct(parenthesesRule)(code)
+    and(lParentheses, expression, rParentheses).struct(parenthesesRule)(code)
 
   extension [A](parser: Parser[A])
     def struct(f: A => Node): Parser[Node] = code =>
@@ -37,14 +38,16 @@ object Expression {
       case head: List[_] => astRule(head)
       case head: Ast     => head
     }
-    tokens.tail.foldLeft(initial) { (ast, token) =>
-      (ast, token) match {
-        case (n: Node, l: List[_])    => astRule(n +: l)
-        case (rhs: Node, op: TwoHand) => op(rhs)
-        case (op: OneHand, lhs: Node) => op(lhs)
-        case (_, _)                   => ast
+    tokens.tail
+      .foldLeft(initial) { (ast, token) =>
+        (ast, token) match {
+          case (n: Node, l: List[_])    => astRule(n +: l)
+          case (rhs: Node, op: TwoHand) => op(rhs)
+          case (op: OneHand, lhs: Node) => op(lhs)
+          case (_, _)                   => ast
+        }
       }
-    }.asInstanceOf[Node]
+      .asInstanceOf[Node]
   }
 
   def unaryRule[A <: List[_]](tokens: A): Node =
@@ -55,6 +58,6 @@ object Expression {
 
   def parenthesesRule[A <: List[_]](tokens: A): Node =
     (tokens.head, tokens(1), tokens.last) match {
-      case (lParentheses, n: Node, rParentheses) => n
+      case (LParentheses, n: Node, RParentheses) => n
     }
 }
