@@ -51,29 +51,41 @@ object Primitive {
     if (code.startsWith(word)) Some(PResult(Str(word), code.drop(word.length)))
     else None
 
-  def charToOp(node: Node): Option[TwoHand] = node match {
-    case Achar('+') => Some(add)
-    case Achar('-') => Some(sub)
-    case Achar('*') => Some(mul)
-    case Achar('/') => Some(div)
-    case _          => None
-  }
+  val binOpMap: Map[Node, TwoHand] = Map(
+    Achar('+') -> ((lhs: Node) => (rhs: Node) => Add(lhs, rhs)),
+    Achar('-') -> ((lhs: Node) => (rhs: Node) => Sub(lhs, rhs)),
+    Achar('*') -> ((lhs: Node) => (rhs: Node) => Mul(lhs, rhs)),
+    Achar('/') -> ((lhs: Node) => (rhs: Node) => Div(lhs, rhs)),
+    Achar('>') -> ((lhs: Node) => (rhs: Node) => Greater(lhs, rhs)),
+    Achar('<') -> ((lhs: Node) => (rhs: Node) => Less(lhs, rhs)),
+    Str("==") -> ((lhs: Node) => (rhs: Node) => Equals(lhs, rhs)),
+    Str("!=") -> ((lhs: Node) => (rhs: Node) => NotEquals(lhs, rhs)),
+    Str(">=") -> ((lhs: Node) => (rhs: Node) => GreaterEqual(lhs, rhs)),
+    Str("<=") -> ((lhs: Node) => (rhs: Node) => LessEqual(lhs, rhs))
+  )
 
-  def operater(op: Operater): Parser[TwoHand] = code =>
+  def binOperater(op: Char): Parser[TwoHand] = code =>
     for {
       PResult(token, rest) <- charS(op)(code)
-      operation <- charToOp(token)
+      operation <- binOpMap.get(token)
     } yield PResult(operation, rest)
 
-  def bangS: Parser[OneHand] = code =>
-    charS('!')(code).map { case PResult(token, rest) =>
-      PResult(rhs => Bang(rhs), rest)
-    }
+  def binOperater(op: String): Parser[TwoHand] = code =>
+    for {
+      PResult(token, rest) <- stringS(op)(code)
+      operation <- binOpMap.get(token)
+    } yield PResult(operation, rest)
 
-  def negativeS: Parser[OneHand] = code =>
-    charS('-')(code).map { case PResult(token, rest) =>
-      PResult(num => Negative(num), rest)
-    }
+  val monoOpMap: Map[Node, OneHand] = Map(
+    Achar('!') -> ((rhs: Node) => Bang(rhs)),
+    Achar('-') -> ((rhs: Node) => Negative(rhs))
+  )
+
+  def monoOperater(op: Char): Parser[OneHand] = code =>
+    for {
+      PResult(token, rest) <- charS(op)(code)
+      operation <- monoOpMap.get(token)
+    } yield PResult(operation, rest)
 
   def boolS: Parser[Node] = code =>
     (parseBool("true") | parseBool("false"))(code)
@@ -83,34 +95,22 @@ object Primitive {
       PResult(Bool(bool.toBoolean), rest)
     }
 
-  def lParenthesesS: Parser[Node] = code =>
-    charS('(')(code).map { case PResult(token, rest) =>
-      PResult(LParentheses, rest)
-    }
-  def rParenthesesS: Parser[Node] = code =>
-    charS(')')(code).map { case PResult(token, rest) =>
-      PResult(RParentheses, rest)
-    }
+  val keyMap: Map[Node, Node] = Map(
+    Achar('(') -> LParentheses,
+    Achar(')') -> RParentheses
+  )
 
-  def greaterS: Parser[TwoHand] = code =>
-    charS('>')(code).map { case PResult(token, rest) =>
-      PResult(lhs => rhs => Greater(lhs, rhs), rest)
-    }
+  def keyword(word: Char): Parser[Node] = code =>
+    for {
+      PResult(token, rest) <- charS(word)(code)
+      keyword <- keyMap.get(token)
+    } yield PResult(keyword, rest)
 
-  def greaterEqualS: Parser[TwoHand] = code =>
-    stringS(">=")(code).map { case PResult(token, rest) =>
-      PResult(lhs => rhs => GreaterEqual(lhs, rhs), rest)
-    }
-
-  def lessS: Parser[TwoHand] = code =>
-    charS('<')(code).map { case PResult(token, rest) =>
-      PResult(lhs => rhs => Less(lhs, rhs), rest)
-    }
-
-  def lessEqualS: Parser[TwoHand] = code =>
-    stringS("<=")(code).map { case PResult(token, rest) =>
-      PResult(lhs => rhs => LessEqual(lhs, rhs), rest)
-    }
+  def keyword(word: String): Parser[Node] = code =>
+    for {
+      PResult(token, rest) <- stringS(word)(code)
+      keyword <- keyMap.get(token)
+    } yield PResult(keyword, rest)
 
   def skipSpace[A](parser: Parser[A]): Parser[A] =
     code => parser(code.trim)
@@ -122,17 +122,19 @@ object Primitive {
   def intNum = skipSpace(intNumS)
   def char(character: Char) = skipSpace(charS(character))
   def string(word: String) = skipSpace(stringS(word))
-  def plus = skipSpace(operater('+'))
-  def minus = skipSpace(operater('-'))
-  def times = skipSpace(operater('*'))
-  def divide = skipSpace(operater('/'))
-  def bang = skipSpace(bangS)
+  def plus = skipSpace(binOperater('+'))
+  def minus = skipSpace(binOperater('-'))
+  def times = skipSpace(binOperater('*'))
+  def divide = skipSpace(binOperater('/'))
+  def bang = skipSpace(monoOperater('!'))
   def bool = skipSpace(boolS)
-  def negative = skipSpace(negativeS)
-  def lParentheses = skipSpace(lParenthesesS)
-  def rParentheses = skipSpace(rParenthesesS)
-  def greater = skipSpace(greaterS)
-  def greaterEqual = skipSpace(greaterEqualS)
-  def less = skipSpace(lessS)
-  def lessEqual = skipSpace(lessEqualS)
+  def negative = skipSpace(monoOperater('-'))
+  def lParentheses = skipSpace(keyword('('))
+  def rParentheses = skipSpace(keyword(')'))
+  def equal = skipSpace(binOperater('='))
+  def notEqual = skipSpace(binOperater("!="))
+  def greater = skipSpace(binOperater('>'))
+  def greaterEqual = skipSpace(binOperater(">="))
+  def less = skipSpace(binOperater('<'))
+  def lessEqual = skipSpace(binOperater("<="))
 }

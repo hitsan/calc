@@ -28,7 +28,7 @@ class PrimitiveSpec extends munit.FunSuite {
 
   // Cannot parse only operater
   test("Operater") {
-    val parsePlus = operater('+')
+    val parsePlus = binOperater('+')
     assertEquals(parsePlus("1+1"), None)
     assertEquals(parsePlus(""), None)
   }

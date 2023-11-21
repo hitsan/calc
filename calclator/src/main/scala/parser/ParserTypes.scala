@@ -1,7 +1,7 @@
 package parser
 import Node._
 
-type Operater = '+' | '-' | '*' | '/'
+// type Operater = '+' | '-' | '*' | '/' | '!' | '=' | '<' | '>' | "==" | "!=" | ">=" | "<="
 
 case class PResult[T](
     token: T,
@@ -27,8 +27,8 @@ enum Node:
   case Bool(value: Boolean)
   case LParentheses
   case RParentheses
-  case Equal(lhs: Node, rhs: Node)
-  case NotEqual(lhs: Node, rhs: Node)
+  case Equals(lhs: Node, rhs: Node)
+  case NotEquals(lhs: Node, rhs: Node)
   case Greater(lhs: Node, rhs: Node)
   case GreaterEqual(lhs: Node, rhs: Node)
   case Less(lhs: Node, rhs: Node)
