@@ -38,14 +38,14 @@ object Expression {
       }
 
   def astRule[A <: List[_]](tokens: A): Node = {
-    val initial = tokens.head match {
-      case head: List[_] => astRule(head)
-      case head: Ast     => head
+    def flatTokens(tokens: List[_]): List[_] = tokens.flatMap {
+      case l: List[_] => flatTokens(l)
+      case a          => List(a)
     }
-    tokens.tail
-      .foldLeft(initial) { (ast, token) =>
+    val toks = flatTokens(tokens)
+    toks.tail
+      .foldLeft(toks.head) { (ast, token) =>
         (ast, token) match {
-          case (n: Node, l: List[_])    => astRule(n +: l)
           case (rhs: Node, op: TwoHand) => op(rhs)
           case (op: OneHand, lhs: Node) => op(lhs)
           case (_, _)                   => ast
