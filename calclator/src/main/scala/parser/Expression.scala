@@ -48,7 +48,7 @@ object Expression {
         (ast, token) match {
           case (rhs: Node, op: TwoHand) => op(rhs)
           case (op: OneHand, lhs: Node) => op(lhs)
-          case (_, _)                   => ast
+          case (_, _)                   => sys.error("Invalid token")
         }
       }
       .asInstanceOf[Node]
