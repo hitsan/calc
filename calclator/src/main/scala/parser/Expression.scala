@@ -48,7 +48,6 @@ object Expression {
         (ast, token) match {
           case (rhs: Node, op: TwoHand) => op(rhs)
           case (op: OneHand, lhs: Node) => op(lhs)
-          case (_, _)                   => sys.error("Invalid token")
         }
       }
       .asInstanceOf[Node]
@@ -57,7 +56,6 @@ object Expression {
   def unaryRule[A <: List[_]](tokens: A): Node =
     (tokens.head, tokens.last) match {
       case (op: OneHand, rhs: Node) => op(rhs)
-      case (_, _)                   => sys.error("Invalid token")
     }
 
   def parenthesesRule[A <: List[_]](tokens: A): Node =
