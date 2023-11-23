@@ -32,5 +32,6 @@ class EvalSpec extends munit.FunSuite {
       expression("22 * (5 + (4 + 5)*6)+3").eval,
       22 * (5 + (4 + 5) * 6) + 3
     )
+    assertEquals(expression("1---2").eval, 1-(-(-2)))
   }
 }

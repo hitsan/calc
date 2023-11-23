@@ -14,6 +14,7 @@ object Eval {
       case Mul(lhs, rhs) => calc(lhs) * calc(rhs)
       case Div(lhs, rhs) => calc(lhs) / calc(rhs)
       case IntNum(n)     => n
+      case Negative(n)   => -calc(n)
       case _             => 0
     }
   }

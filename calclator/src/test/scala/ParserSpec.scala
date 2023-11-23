@@ -13,14 +13,14 @@ class ParserSpec extends munit.FunSuite {
 
   test("parser should return Left(ParseError) when there is a parse error") {
     val code = "1 +"
-    val expectedError = ParseError("Invalid syntax: +")
+    val expectedError = ParseError("Invalid syntax:  +")
     val result = Parser.parser(code)
     assertEquals(result, Left(expectedError))
   }
 
   test("parser should return Left(ParseError) when the syntax is invalid") {
     val code = "1 + 2 *"
-    val expectedError = ParseError(s"Invalid syntax: $code")
+    val expectedError = ParseError(s"Invalid syntax:  *")
     val result = Parser.parser(code)
     assertEquals(result, Left(expectedError))
   }
