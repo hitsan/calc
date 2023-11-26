@@ -2,6 +2,7 @@ package parser
 
 object Eval {
   import Node._
+  import scala.reflect.ClassTag
 
   type Value = Int | Boolean | String
   type Result = Either[RuntimeError, Value]
@@ -37,9 +38,12 @@ object Eval {
       r <- rhs
       ret <- (l, r) match {
         case (l: Int, r: Int) => Right(op(l, r))
-        case (l: Int, r) => Left(RuntimeError(s"Expected Integer, but found $r"))
-        case (l, r: Int) => Left(RuntimeError(s"Expected Integer, but found $l"))
-        case (l, r)      => Left(RuntimeError(s"Expected Integer, but found $l and $r"))
+        case (l: Int, r) =>
+          Left(RuntimeError(s"Expected Integer, but found $r"))
+        case (l, r: Int) =>
+          Left(RuntimeError(s"Expected Integer, but found $l"))
+        case (l, r) =>
+          Left(RuntimeError(s"Expected Integer, but found $l and $r"))
       }
     } yield ret
   }
@@ -56,9 +60,12 @@ object Eval {
       r <- rhs
       ret <- (l, r) match {
         case (l: Int, r: Int) => Right(op(l, r))
-        case (l: Int, r) => Left(RuntimeError(s"Expected Integer, but found $r"))
-        case (l, r: Int) => Left(RuntimeError(s"Expected Integer, but found $l"))
-        case (l, r)      => Left(RuntimeError(s"Expected Integer, but found $l and $r"))
+        case (l: Int, r) =>
+          Left(RuntimeError(s"Expected Integer, but found $r"))
+        case (l, r: Int) =>
+          Left(RuntimeError(s"Expected Integer, but found $l"))
+        case (l, r) =>
+          Left(RuntimeError(s"Expected Integer, but found $l and $r"))
       }
     } yield ret
   }
@@ -107,8 +114,8 @@ object Eval {
       case LessEqual(lhs, rhs)    => binBoolExpr(lessEqual, lhs, rhs)
       case Greater(lhs, rhs)      => binBoolExpr(greater, lhs, rhs)
       case GreaterEqual(lhs, rhs) => binBoolExpr(greaterEqual, lhs, rhs)
-      case Bang(rhs)              => monoBoolExpr(bang, rhs)
       case Negative(rhs)          => monoNumExpr(negative, rhs)
+      case Bang(rhs)              => monoBoolExpr(bang, rhs)
       case IntNum(n)              => Right(n)
       case Bool(n)                => Right(n)
       case _                      => Left(RuntimeError("Invalid syntax"))
