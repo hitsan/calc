@@ -2,7 +2,6 @@ package parser
 
 object Eval {
   import Node._
-  import scala.reflect.ClassTag
 
   type Value = Int | Boolean | String
   type Result = Either[RuntimeError, Value]
@@ -12,19 +11,6 @@ object Eval {
       case Left(value)  => Left(RuntimeError(value.message))
       case Right(value) => calc(value)
     }
-
-  val add = (a: Int, b: Int) => a + b
-  val sub = (a: Int, b: Int) => a - b
-  val mul = (a: Int, b: Int) => a * b
-  val div = (a: Int, b: Int) => a / b
-  val equals = (a: Int, b: Int) => a == b
-  val notEquals = (a: Int, b: Int) => a != b
-  val less = (a: Int, b: Int) => a < b
-  val lessEqual = (a: Int, b: Int) => a <= b
-  val greater = (a: Int, b: Int) => a > b
-  val greaterEqual = (a: Int, b: Int) => a >= b
-  val bang = (a: Boolean) => !a
-  val negative = (a: Int) => -a
 
   def binNumExpr(
       op: (Int, Int) => Int,
@@ -95,13 +81,6 @@ object Eval {
     } yield ret
   }
 
-  def litExpr(node: Node): Either[RuntimeError, Value] =
-    node match {
-      case IntNum(n) => Right(n)
-      case Bool(n)   => Right(n)
-      case n         => Left(RuntimeError("Invalid value"))
-    }
-
   def calc(node: Node): Either[RuntimeError, Value] =
     node match {
       case Add(lhs, rhs)          => binNumExpr(add, lhs, rhs)
@@ -120,4 +99,16 @@ object Eval {
       case Bool(n)                => Right(n)
       case _                      => Left(RuntimeError("Invalid syntax"))
     }
+  val add = (a: Int, b: Int) => a + b
+  val sub = (a: Int, b: Int) => a - b
+  val mul = (a: Int, b: Int) => a * b
+  val div = (a: Int, b: Int) => a / b
+  val equals = (a: Int, b: Int) => a == b
+  val notEquals = (a: Int, b: Int) => a != b
+  val less = (a: Int, b: Int) => a < b
+  val lessEqual = (a: Int, b: Int) => a <= b
+  val greater = (a: Int, b: Int) => a > b
+  val greaterEqual = (a: Int, b: Int) => a >= b
+  val bang = (a: Boolean) => !a
+  val negative = (a: Int) => -a
 }

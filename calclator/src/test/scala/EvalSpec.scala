@@ -1,8 +1,7 @@
 import parser.PResult
 class EvalSpec extends munit.FunSuite {
-  import parser.Expression._
-  import parser.Eval._
-  import parser.Parser._
+  import parser.Eval.eval
+  import parser.Parser.parse
   import parser.RuntimeError
 
   test("add") {
