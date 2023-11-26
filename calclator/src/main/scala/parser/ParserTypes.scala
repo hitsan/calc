@@ -12,6 +12,9 @@ type OrParser[A, B] = Parser[A] | Parser[B]
 //   case Parser[_] => Parser[List[B | C]]
 //   case PResult[_] => PResult[List[B | C]]
 
+case class ParseError(message: String) extends Exception(message)
+case class RuntimeError(message: String) extends Exception(message)
+
 enum Node:
   case Add(lhs: Node, rhs: Node)
   case Sub(lhs: Node, rhs: Node)
