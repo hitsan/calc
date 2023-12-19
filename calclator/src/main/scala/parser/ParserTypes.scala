@@ -15,10 +15,6 @@ type OrParser[A, B] = Parser[A] | Parser[B]
 case class ParseError(message: String) extends Exception(message)
 case class RuntimeError(message: String) extends Exception(message)
 
-case class Stmt(
-    expr: Node,
-    rest: String
-)
 enum Node:
   case Add(lhs: Node, rhs: Node)
   case Sub(lhs: Node, rhs: Node)
