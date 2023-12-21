@@ -217,6 +217,58 @@ class ExpressionSpec extends munit.FunSuite {
     )
   }
 
+  test("exprStmt") {
+    assertEquals(exprStmt("1;"), Some(PResult(IntNum(1), "")))
+    assertEquals(exprStmt("1+2;"), Some(PResult(Add(IntNum(1), IntNum(2)), "")))
+    assertEquals(
+      exprStmt("1+2-3;"),
+      Some(PResult(Sub(Add(IntNum(1), IntNum(2)), IntNum(3)), ""))
+    )
+    assertEquals(
+      exprStmt("1+2-3+4;"),
+      Some(
+        PResult(Add(Sub(Add(IntNum(1), IntNum(2)), IntNum(3)), IntNum(4)), "")
+      )
+    )
+    assertEquals(exprStmt("+23*4;"), None)
+    assertEquals(exprStmt(""), None)
+
+    assertEquals(
+      exprStmt("1+2*3;"),
+      Some(PResult(Add(IntNum(1), Mul(IntNum(2), IntNum(3))), ""))
+    )
+    assertEquals(
+      exprStmt("1/2-3;"),
+      Some(PResult(Sub(Div(IntNum(1), IntNum(2)), IntNum(3)), ""))
+    )
+    assertEquals(
+      exprStmt("1*2-3/4;"),
+      Some(
+        PResult(Sub(Mul(IntNum(1), IntNum(2)), Div(IntNum(3), IntNum(4))), "")
+      )
+    )
+    assertEquals(
+      exprStmt("(1+2)*3;"),
+      Some(PResult(Mul(Add(IntNum(1), IntNum(2)), IntNum(3)), ""))
+    )
+    assertEquals(
+      exprStmt("1/(2-3);"),
+      Some(PResult(Div(IntNum(1), Sub(IntNum(2), IntNum(3))), ""))
+    )
+    assertEquals(
+      exprStmt("(1+2)*(3-4);"),
+      Some(
+        PResult(Mul(Add(IntNum(1), IntNum(2)), Sub(IntNum(3), IntNum(4))), "")
+      )
+    )
+    assertEquals(
+      exprStmt("(1+2)*3/4;"),
+      Some(
+        PResult(Div(Mul(Add(IntNum(1), IntNum(2)), IntNum(3)), IntNum(4)), "")
+      )
+    )
+    assertEquals(exprStmt("-1;"), Some(PResult(Negative(IntNum(1)), "")))
+  }
   // test("expression with invalid characters") {
   //   // assertEquals(expression("1a"), None)
   //   assertEquals(expression("1+*2"), None)

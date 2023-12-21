@@ -5,7 +5,14 @@ object Expression {
   import Primitive._
   import Combinator._
 
-  // Parser Expression
+
+  def program: Parser[Node] = code => statement(code)
+
+  def statement: Parser[Node] = code => exprStmt(code)
+
+  def exprStmt: Parser[Node] = code =>
+    (expression & semicolon).struct(exprStmtRule)(code)
+
   def expression: Parser[Node] = code => equality(code)
 
   def equality: Parser[Node] = code =>
@@ -36,6 +43,9 @@ object Expression {
       parser(code).map { case PResult(tokens, rest) =>
         PResult(f(tokens), rest)
       }
+
+  def exprStmtRule[A <: List[_]](tokens: A): Node =
+    tokens.head.asInstanceOf[Node]
 
   def astRule[A <: List[_]](tokens: A): Node = {
     def flatTokens(tokens: List[_]): List[_] = tokens.flatMap {
