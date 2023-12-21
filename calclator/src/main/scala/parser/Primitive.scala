@@ -97,7 +97,8 @@ object Primitive {
 
   val keyMap: Map[Node, Node] = Map(
     Achar('(') -> LParentheses,
-    Achar(')') -> RParentheses
+    Achar(')') -> RParentheses,
+    Achar(';') -> Semicolon
   )
 
   def keyword(word: Char): Parser[Node] = code =>
@@ -137,4 +138,5 @@ object Primitive {
   def greaterEqual = skipSpace(binOperater(">="))
   def less = skipSpace(binOperater('<'))
   def lessEqual = skipSpace(binOperater("<="))
+  def semicolon = skipSpace(keyword(';'))
 }

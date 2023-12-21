@@ -34,6 +34,7 @@ enum Node:
   case GreaterEqual(lhs: Node, rhs: Node)
   case Less(lhs: Node, rhs: Node)
   case LessEqual(lhs: Node, rhs: Node)
+  case Semicolon
 type OneHand = Node => Node
 type TwoHand = Node => Node => Node
 type Ast = Node | OneHand | TwoHand
