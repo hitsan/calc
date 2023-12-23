@@ -29,6 +29,19 @@ object Primitive {
     }
   }
 
+  def identifierS: Parser[Node] = code => {
+    def joinName(chars: List[Node]): Node = chars.foldLeft(Identifier("")) {
+      (str, char) =>
+        (str, char) match {
+          case (Identifier(str), Achar(char)) => Identifier(str + char)
+          case _                       => sys.error("Invalid token")
+        }
+    }
+    rep(anyChar)(code).map { case PResult(tokens, rest) =>
+      PResult(joinName(tokens), rest)
+    }
+  }
+
   def intNumS: Parser[Node] = code => {
     def joinIntNums(nums: List[Node]): Node = nums.foldLeft(IntNum(0)) {
       (acc, num) =>
@@ -98,7 +111,9 @@ object Primitive {
   val keyMap: Map[Node, Node] = Map(
     Achar('(') -> LParentheses,
     Achar(')') -> RParentheses,
-    Achar(';') -> Semicolon
+    Achar(';') -> Semicolon,
+    Str("var") -> Var,
+    Achar('=') -> Assign
   )
 
   def keyword(word: Char): Parser[Node] = code =>
@@ -139,4 +154,7 @@ object Primitive {
   def less = skipSpace(binOperater('<'))
   def lessEqual = skipSpace(binOperater("<="))
   def semicolon = skipSpace(keyword(';'))
+  def varKey = skipSpace(keyword("var"))
+  def identifier = skipSpace(identifierS)
+  def assign = skipSpace(keyword('='))
 }

@@ -35,6 +35,10 @@ enum Node:
   case Less(lhs: Node, rhs: Node)
   case LessEqual(lhs: Node, rhs: Node)
   case Semicolon
+  case Var
+  case Assign
+  case Identifier(name: String)
+  case VarDecl(name: Identifier, expr: Node)
 type OneHand = Node => Node
 type TwoHand = Node => Node => Node
 type Ast = Node | OneHand | TwoHand

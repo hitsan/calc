@@ -5,8 +5,14 @@ object Expression {
   import Primitive._
   import Combinator._
 
+  def program: Parser[Node] = code => declaration(code)
 
-  def program: Parser[Node] = code => statement(code)
+  def declaration: Parser[Node] = code => (varDecl | statement)(code)
+
+  def varDecl: Parser[Node] = code =>
+    and(varKey, identifier, assign, expression, semicolon).struct(varDeclRule)(
+      code
+    )
 
   def statement: Parser[Node] = code => exprStmt(code)
 
@@ -43,6 +49,12 @@ object Expression {
       parser(code).map { case PResult(tokens, rest) =>
         PResult(f(tokens), rest)
       }
+
+  def varDeclRule[A <: List[_]](tokens: A): Node =
+    tokens match {
+      case Var :: (name: Identifier) :: Assign :: (expr: Node) :: Semicolon :: Nil =>
+        VarDecl(name, expr)
+    }
 
   def exprStmtRule[A <: List[_]](tokens: A): Node =
     tokens.head.asInstanceOf[Node]
