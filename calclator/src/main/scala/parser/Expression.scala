@@ -10,9 +10,8 @@ object Expression {
   def declaration: Parser[Node] = code => (varDecl | statement)(code)
 
   def varDecl: Parser[Node] = code =>
-    and(varKey, identifier, assign, expression, semicolon).struct(varDeclRule)(
-      code
-    )
+    and(varKey, identifier, assign, expression, semicolon)
+      .struct(varDeclRule)(code)
 
   def statement: Parser[Node] = code => exprStmt(code)
 
