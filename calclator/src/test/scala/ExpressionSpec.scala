@@ -269,6 +269,17 @@ class ExpressionSpec extends munit.FunSuite {
     )
     assertEquals(exprStmt("-1;"), Some(PResult(Negative(IntNum(1)), "")))
   }
+
+  test("Var declaration") {
+    assertEquals(
+      varDecl("var a = 1;"),
+      Some(PResult(VarDecl(Identifier("a"), IntNum(1)), ""))
+    )
+    assertEquals(
+      varDecl("var a = 1+2;"),
+      Some(PResult(VarDecl(Identifier("a"), Add(IntNum(1), IntNum(2))), ""))
+    )
+  }
   // test("expression with invalid characters") {
   //   // assertEquals(expression("1a"), None)
   //   assertEquals(expression("1+*2"), None)
