@@ -24,7 +24,7 @@ object Primitive {
           case _                       => sys.error("Invalid token")
         }
     }
-    rep(anyChar)(code).map { case PResult(tokens, rest) =>
+    rep(anyCharS)(code).map { case PResult(tokens, rest) =>
       PResult(joinChars(tokens), rest)
     }
   }
@@ -37,7 +37,7 @@ object Primitive {
           case _                       => sys.error("Invalid token")
         }
     }
-    rep(anyChar)(code).map { case PResult(tokens, rest) =>
+    rep(anyCharS)(code).map { case PResult(tokens, rest) =>
       PResult(joinName(tokens), rest)
     }
   }
