@@ -38,7 +38,7 @@ object Expression {
     ((bang | negative) & unary).struct(unaryRule)(code).orElse(primary(code))
 
   def primary: Parser[Node] = code =>
-    (intNum | bool | anyString | parenthesesExpr)(code)
+    (intNum | bool | identifier | parenthesesExpr)(code)
 
   def parenthesesExpr: Parser[Node] = code =>
     and(lParentheses, expression, rParentheses).struct(parenthesesRule)(code)

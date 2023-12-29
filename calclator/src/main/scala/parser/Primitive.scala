@@ -16,6 +16,11 @@ object Primitive {
       PResult(IntNum(head.asDigit), code.tail)
     }
 
+  def anyLetterS: Parser[Node] = code =>
+    code.headOption.withFilter(c => c.isLetter || c.isDigit).map { head =>
+      PResult(Achar(head), code.tail)
+    }
+
   def anyStringS: Parser[Node] = code => {
     def joinChars(chars: List[Node]): Node = chars.foldLeft(Str("")) {
       (str, char) =>
@@ -37,7 +42,7 @@ object Primitive {
           case _                       => sys.error("Invalid token")
         }
     }
-    rep(anyCharS)(code).map { case PResult(tokens, rest) =>
+    rep(anyLetterS)(code).map { case PResult(tokens, rest) =>
       PResult(joinName(tokens), rest)
     }
   }
