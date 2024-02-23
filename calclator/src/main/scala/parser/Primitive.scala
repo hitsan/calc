@@ -7,6 +7,11 @@ object Primitive {
 
   // Don't allow space
   def anyCharS: Parser[Node] = code =>
+    code.headOption.map { head =>
+      PResult(Achar(head), code.tail)
+    }
+
+  def anyLetterS: Parser[Node] = code =>
     code.headOption.withFilter(_.isLetter).map { head =>
       PResult(Achar(head), code.tail)
     }
@@ -24,7 +29,7 @@ object Primitive {
           case _                       => sys.error("Invalid token")
         }
     }
-    rep(anyChar)(code).map { case PResult(tokens, rest) =>
+    rep(anyLetterS)(code).map { case PResult(tokens, rest) =>
       PResult(joinChars(tokens), rest)
     }
   }
@@ -37,7 +42,7 @@ object Primitive {
           case _                       => sys.error("Invalid token")
         }
     }
-    rep(anyChar)(code).map { case PResult(tokens, rest) =>
+    rep(anyLetterS)(code).map { case PResult(tokens, rest) =>
       PResult(joinName(tokens), rest)
     }
   }
@@ -133,6 +138,7 @@ object Primitive {
 
   // Blow functions can skip space
   def anyChar = skipSpace(anyCharS)
+  def anyLetter = skipSpace(anyLetterS)
   def digit = skipSpace(digitS)
   def anyString = skipSpace(anyStringS)
   def intNum = skipSpace(intNumS)
