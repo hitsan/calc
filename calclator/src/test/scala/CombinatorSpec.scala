@@ -71,13 +71,9 @@ class CombinatorSpec extends munit.FunSuite {
     assertEquals(intStr("11-2"), Some(PResult(IntNum(11), "-2")))
     assertEquals(intStr(""), None)
 
-    // val charStr = or(anyChar, anyLetter)
-    // assertEquals(charStr("a+2"), Some(PResult(Achar('a'), "+2")))
-    // assertEquals(charStr("ab+2"), Some(PResult(Achar('a'), "b+2")))
-
-    // val strChar = or(anyLetter, anyChar)
-    // assertEquals(strChar("a+2"), Some(PResult(Str("a"), "+2")))
-    // assertEquals(strChar("ab+2"), Some(PResult(Str("ab"), "+2")))
+    val charStr = or(anyChar, anyLetter)
+    assertEquals(charStr("a+2"), Some(PResult(Achar('a'), "+2")))
+    assertEquals(charStr("ab+2"), Some(PResult(Achar('a'), "b+2")))
 
     val str = or(string("if"), string("else"))
     assertEquals(str("ifelse"), Some(PResult(Str("if"), "else")))

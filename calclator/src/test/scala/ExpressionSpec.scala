@@ -7,8 +7,8 @@ class ExpressionSpec extends munit.FunSuite {
     assertEquals(expression("123"), Some(PResult(IntNum(123), "")))
     assertEquals(primary("12 + 3"), Some(PResult(IntNum(12), " + 3")))
     assertEquals(primary("123abc"), Some(PResult(IntNum(123), "abc")))
-    // assertEquals(primary("abc"), Some(PResult(Str("abc"), "")))
-    // assertEquals(primary("abc123"), Some(PResult(Str("abc"), "123")))
+    assertEquals(primary("abc"), Some(PResult(Str("abc"), "")))
+    assertEquals(primary("abc123"), Some(PResult(Str("abc"), "123")))
     assertEquals(primary("+123"), None)
     assertEquals(primary(""), None)
   }
